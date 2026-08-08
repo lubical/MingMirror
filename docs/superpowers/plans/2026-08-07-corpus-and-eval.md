@@ -42,6 +42,11 @@ concepts/
 examples/
   焦虑与精神内耗-01.md         # 对话示例（共 5-10 个，Task 19）
   ……（工作倦怠与异化 / 意义与方向危机 / 人际与情感困扰 / 欲望与物质匮乏感 各 1-2 个）
+paperkit/
+  README.md                    # 使用说明 + 打印指南 + 自助审视三步（Task 20）
+  matrix-cheatsheet.md         # 一页诊断矩阵速查卡
+  method-cards.md              # 15 张方法卡
+  quote-cards.md               # 高频金句卡（每声部 5-8 条，标注语料 id）
 tests/
   validate-corpus.test.mjs     # 校验脚本的测试（node:test，TDD）
   validate-corpus.mjs          # 校验脚本本体
@@ -1729,8 +1734,121 @@ git commit -m "examples: 对话示例层（N 个完整示例，风格锚）"
 
 ---
 
+## Task 20: 纸版工具包（paperkit/，无 AI 自助审视）
+
+**Files:**
+- Create: `paperkit/README.md`, `paperkit/matrix-cheatsheet.md`, `paperkit/method-cards.md`, `paperkit/quote-cards.md`
+
+> 前置：corpus/（Task 4-13）与 methods/（Task 16）须已建成。规范见设计文档 §8.8。
+
+- [ ] **Step 1: 创建 `paperkit/README.md`（完整内容直接写入）：**
+
+```markdown
+# 明镜·纸版工具包
+
+> 无 AI、无网络时的自助审视工具。与角色卡 v0.4 配套，物化自知识资产（设计文档 §8）。
+> 打印建议：A4 横版，matrix-cheatsheet 单页；method-cards 每卡半页裁剪；quote-cards 双面打印。
+
+## 怎么用（自助审视三步）
+
+1. **识别**：翻开 `matrix-cheatsheet.md`，对照"识别信号"判断当前困境属于哪一类（可组合，分主次）。
+2. **选方**：看该行"首选/辅选"声部 → 翻开 `method-cards.md` 对应方法卡 → 照操作步骤执行（纸笔即可完成）。
+3. **校验**：做完后用行动三原则自查（具体？可检验？当天可做？）；对照金句卡"禁用场景"检查有没有开错药。
+
+## 四件套
+
+- `matrix-cheatsheet.md` —— 一页诊断矩阵速查卡
+- `method-cards.md` —— 15 张方法卡
+- `quote-cards.md` —— 高频金句卡（每声部 5-8 条）
+- （本文件）
+
+## 与 AI 版的关系
+
+AI 版（角色卡）是"有教练陪同练习"；纸版是"独立上路"。两者共用同一套诊断框架、方法步骤与边界，输出完全兼容——
+用纸版练到熟练后，再遇到困境就不需要打开 AI 了。
+```
+
+- [ ] **Step 2: 创建 `paperkit/matrix-cheatsheet.md`（完整内容直接写入，从设计文档 §4 精简）：**
+
+```markdown
+# 诊断矩阵速查卡（一页）
+
+> 用法：对照"识别信号"圈出你的困境类型 → 看首选/辅选声部 → 翻开对应方法卡。回避列是硬规则。
+
+| 困境类型 | 识别信号（出现 2 条以上） | 首选 | 辅选 | 回避（不要用） |
+|---|---|---|---|---|
+| 意义与方向危机 | 活着为了什么 / 没意思 / 不知道往哪走 | 慧能·当下观；弗兰克尔·意义三源 | 孔子·君子之道 | 资本论（易滑向虚无） |
+| 工作倦怠与异化 | 上班如上坟 / 工具人 / 累但不知为何 | 马克思·结构归因 | 毛泽东·矛盾分析法；王阳明·事上磨练 | "热爱工作"式鸡汤 |
+| 焦虑与精神内耗 | 控制不住地想 / 灾难化想象 / 反刍 | 老子·反者道之动；斯多葛·控制二分法 | 慧能·破执观；庄子·齐物观 | 斗争哲学（加重紧绷） |
+| 人际与情感困扰 | 被背叛 / 讨好 / 评价依赖 | 孔子·反求诸己；王阳明·致良知 | 慧能·放下我执；庄子·不因外物伤己 | 毛式"斗争" |
+| 欲望与物质匮乏感 | 攀比 / 求而不得 / 消费后空虚 | 老子·知足观 | 斯多葛·欲望审计；马克思·商品拜物教；庄子·鹪鹩巢林 | 禁欲主义说教 |
+
+> 组合困境：主类型取首选，次类型取辅选，不跨类型混搭。
+```
+
+- [ ] **Step 3: 创建 `paperkit/method-cards.md`（先写卡 1 完整示范，再补齐其余 14 张）：**
+
+```markdown
+# 方法卡（15 张）
+
+## 卡 1｜控制二分法（斯多葛）
+**用途**：反刍焦虑、灾难化想象、为不可控的事烦恼。
+**步骤**：
+1. 把担心逐条写下来。
+2. 每条归入两栏：我控制的 / 我不控制的。
+3. 划掉"不控制"栏——它们不归你负责。
+4. 给"控制"栏每条定一个今天可做的小行动。
+**提醒**：别把"他的看法"放进你控制的栏——那是他的作业。
+
+## 卡 2｜矛盾分析法（毛泽东）
+**用途**：多问题缠身、被困难总量吓住。
+**步骤**：
+1. 把所有烦恼写下来，不筛选。
+2. 问：哪一个解决了，其他会跟着松动？——那是主因。
+3. 把主因拆成"我能影响的 / 我不能影响的"。
+4. 给"我能影响"的部分定一个今天可做的小行动。
+**提醒**：主因不是唯一因；先接住情绪再分析。
+```
+
+补齐其余 13 张（同样式，从 methods/ 对应文件提取"目的+步骤+不适用"精简为一张卡）：实践-认识循环 / 战略藐视战术重视 / 知足观 / 反者道之动 / 反求诸己 / 当下观 / 破执观 / 结构归因 / 知行合一·事上磨练 / 致良知 / 齐物观 / 消极想象 / 意义三源。每张卡必须保留"提醒"（即禁用/不适用场景的一句话版）。
+
+- [ ] **Step 4: 创建 `paperkit/quote-cards.md`（先写老子段示范，再补齐其余声部）：**
+
+```markdown
+# 高频金句卡（每声部 5-8 条，共约 60-80 条）
+
+> 用法：查"适用场景"→ 找到当前困境 → 读原文+白话。先看"禁用场景"，禁用时不读。
+
+## 老子（laozi）
+- **知足者富**（《道德经》三十三章，corpus: laozi-001）｜白话：匮乏感是欲望的函数，不是财产的函数。
+  适用：攀比、求而不得。禁用：真实资源危机（失业/破产）。
+- **飘风不终朝，骤雨不终日**（二十三章，corpus: laozi-005）｜白话：再猛的困境也有尽头。
+  适用：焦虑、倦怠。禁用：已持续数年的慢性困境（讲"暂时"会显轻率）。
+```
+
+其余声部同式：每条含 原文（出处，corpus: <id>）｜白话一句话 + 适用/禁用各一行。挑选原则："高频 + 跨场景 + 白话解析最打动人"，每声部 5-8 条。
+
+- [ ] **Step 5: 校验纸版工具包引用无悬空**
+
+Run:
+```bash
+node -e "const fs=require('fs');const ids=new Set();for(const f of fs.readdirSync('corpus')){for(const e of JSON.parse(fs.readFileSync('corpus/'+f)))ids.add(e.id)}const q=fs.readFileSync('paperkit/quote-cards.md','utf8');const refs=[...q.matchAll(/corpus: ([a-z-]+-\d{3})/g)].map(m=>m[1]);const miss=[...new Set(refs.filter(r=>!ids.has(r)))];const mc=fs.readFileSync('paperkit/method-cards.md','utf8');const names=['矛盾分析法','实践-认识循环','战略藐视战术重视','知足观','反者道之动','反求诸己','当下观','破执观','结构归因','知行合一·事上磨练','致良知','齐物观','控制二分法','消极想象','意义三源'];const mn=names.filter(n=>!mc.includes(n));console.log('金句悬空: '+(miss.join(',')||'无')+'；缺失方法卡: '+(mn.join(',')||'无'))"
+```
+Expected: `金句悬空: 无；缺失方法卡: 无`（金句引用 60-80 个全部存在，15 张方法卡齐全）
+
+- [ ] **Step 6: 手动抽查**：打开 `paperkit/matrix-cheatsheet.md` 确认单页可打印、五类齐全、回避列完整；`paperkit/README.md` 的自助审视三步与设计文档 §8.8 一致。
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add paperkit/
+git commit -m "paperkit: 纸版工具包（矩阵速查/15方法卡/高频金句卡/自助审视说明）"
+```
+
+---
+
 ## 自检（plan self-review）
 
-- **Spec 覆盖**：设计文档 §8（知识资产四层：corpus/methods/guides/concepts/examples）→ Task 3-13（corpus）、Task 16（methods）、Task 17（guides）、Task 18（concepts+校验扩展）、Task 19（examples）；§4 解药矩阵 → Task 14 Step 3 覆盖核对；§9 角色卡（v0.3 双模式/命令协议/学习模式/方法名表）→ 阶段 1（`eval/`，实测工具）+ Task 15（学习模式课程大纲）+ Task 16（方法步骤供处方引用）；§10 阶段 1/2 → Task 1-2 / Task 3-19。无缺口。
+- **Spec 覆盖**：设计文档 §8（知识资产四层 + §8.8 纸版工具包）→ Task 3-13（corpus）、Task 16（methods）、Task 17（guides）、Task 18（concepts+校验扩展）、Task 19（examples）、Task 20（paperkit）；§4 解药矩阵 → Task 14 Step 3 覆盖核对 + Task 20 Step 2（速查卡）；§9 角色卡（v0.4：双模式/命令协议/学习模式/方法名表/处方三事实）→ 阶段 1（`eval/`，实测工具）+ Task 15（学习模式课程大纲）+ Task 16（方法步骤供处方引用）；§10 阶段 1/2 → Task 1-2 / Task 3-20。无缺口。
 - **占位符检查**：无 TBD/TODO；每个语料/方法/导读/概念/示例 Task 均含完整示范内容与补齐清单。
 - **类型一致性**：声部标识 `laozi/lunyu/tanjing/mao/kapital/chuanxi/zhuangzi/stoic/frankl/zhuan-yi` 在 Task 3 白名单、各 Task 示范条目、Task 16/17/18 校验命令、Task 14 核对命令五处一致；困境类型五类名称在 Task 3、Task 1 核对表、各示范条目四处一致；概念 id 统一 `concept-<voice>-<三位序号>` 前缀（Task 18 校验分流依据）；概念引用语料 id 与 corpus 文件 id 一一对应（Task 18 悬空检查）。
