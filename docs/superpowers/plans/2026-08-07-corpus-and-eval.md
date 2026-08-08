@@ -30,6 +30,18 @@ corpus/
   stoic.json                   # 补声部·斯多葛 15-25 条
   frankl.json                  # 补声部·弗兰克尔 15-25 条
   zhuan-yi-layer.json          # 转译层 4 本摘句 20-40 条
+methods/
+  矛盾分析法.md                # 方法步骤（共 15 个方法文件，Task 16）
+  ……（实践-认识循环 / 战略藐视战术重视 / 知足观 / 反者道之动 / 反求诸己 / 当下观 / 破执观 / 结构归因 / 知行合一·事上磨练 / 致良知 / 齐物观 / 控制二分法 / 消极想象 / 意义三源）
+guides/
+  laozi.md                     # 声部导读（共 10 份，Task 17）
+  ……（lunyu / tanjing / mao / kapital / chuanxi / zhuangzi / stoic / frankl / zhuan-yi）
+concepts/
+  mao.json                     # 概念条目（每声部一个文件，共 80-120 条，Task 18）
+  ……（laozi / lunyu / tanjing / kapital / chuanxi / zhuangzi / stoic / frankl / zhuan-yi）
+examples/
+  焦虑与精神内耗-01.md         # 对话示例（共 5-10 个，Task 19）
+  ……（工作倦怠与异化 / 意义与方向危机 / 人际与情感困扰 / 欲望与物质匮乏感 各 1-2 个）
 tests/
   validate-corpus.test.mjs     # 校验脚本的测试（node:test，TDD）
   validate-corpus.mjs          # 校验脚本本体
@@ -1315,7 +1327,7 @@ node -e "const fs=require('fs');const ids=new Set();for(const f of fs.readdirSyn
 ```
 Expected: `OK: 10 个引用全部存在`（入门路径 10 条代表语料）。若报缺失，说明对应语料 Task 未覆盖该 id——回到对应文件补齐该 id 条目。
 
-- [ ] **Step 3: 与设计文档 §9 角色卡 v0.2 对照**：确认角色卡"学习模式"节的四级路径与本大纲一致（入门扫盲/基础矩阵/进阶案例/专业张力）。如角色卡未含（例如 v0.2 合入失败），回设计文档补。
+- [ ] **Step 3: 与设计文档 §9 角色卡 v0.3 对照**：确认角色卡"学习模式"节的四级路径与本大纲一致（入门以 guides/ 导读为骨架、基础用 methods/ 方法步骤逐格讲解、进阶案例风格对照 examples/、专业用 /对比 张力辨析）。如角色卡未含（例如 v0.3 合入失败），回设计文档补。
 
 - [ ] **Step 4: Commit**
 
@@ -1326,8 +1338,399 @@ git commit -m "eval: 学习模式四级课程大纲（入门/基础/进阶/专�
 
 ---
 
+## Task 16: 方法步骤层（methods/）
+
+**Files:**
+- Create: `methods/矛盾分析法.md` 及另外 14 个方法文件
+
+- [ ] **Step 1: 创建 `methods/矛盾分析法.md`（示范，完整内容直接写入）：**
+
+```markdown
+---
+name: 矛盾分析法
+voice: mao
+适用于: ["工作倦怠与异化", "焦虑与精神内耗", "意义与方向危机"]
+关联概念: ["concept-mao-001", "concept-mao-002"]
+---
+
+## 目的
+当多个问题缠在一起、被压得喘不过气时，找到那个牵一发而动全身的主因，集中火力，而不是眉毛胡子一把抓。
+
+## 适用情境 / 不适用情境
+- 适用：多个烦恼并存、决策困难、被困难总量吓住
+- 不适用：单纯的情绪宣泄需求（先接住情绪）；已处于崩溃边缘（先稳定再分析）；焦虑型内耗且无明显外部矛盾（此时控制二分法更合适）
+
+## 操作步骤
+1. **全部列出**：把当前所有烦恼写下来，不筛选、不排序。
+2. **找主因**：问自己"哪一个解决了，其他会跟着松动？"——这就是主要矛盾。
+3. **拆解主因**：把主因拆成"我能影响的"与"我不能影响的"两部分。
+4. **定一个行动**：针对"我能影响"的部分，定一个今天可做的最小行动。
+
+## 示例
+小张同时焦虑：工作没成就感、房租涨价、和父母关系紧张。列出后他发现工作没成就感是主因——加班多导致没时间陪父母，收入焦虑也源于想换工作。他定下的行动是：今晚写一页"这份工作里最消耗我的三件事"。
+
+## 常见错误
+1. 把"主因"当"唯一因"：主因解决不意味着其他自动消失，仍需关注次要矛盾。
+2. 分析上瘾不动手：第四步必须是行动，否则是空转。
+3. 用主因否定情绪：先接住情绪再分析，顺序不能反。
+```
+
+- [ ] **Step 2: 补齐其余 14 个方法文件（同样式），清单（文件名 → voice → 适用于）：**
+
+1. `实践-认识循环.md`（mao，意义与方向危机/工作倦怠与异化）——步骤：做一小步实践→记感受→提炼规律→用规律指导下一步
+2. `战略藐视战术重视.md`（mao，工作倦怠与异化/意义与方向危机）——战略上不吓自己，战术上认真走每一步
+3. `知足观.md`（laozi，欲望与物质匮乏感）——区分"需要"与"想要"，盘点已有
+4. `反者道之动.md`（laozi，焦虑与精神内耗/意义与方向危机）——困到极点即转机前夜，不硬扛而蓄力
+5. `反求诸己.md`（lunyu，人际与情感困扰）——找"我能改变什么"而非揽全责
+6. `当下观.md`（tanjing，意义与方向危机/焦虑与精神内耗）——把注意力从过去未来收回此刻
+7. `破执观.md`（tanjing，焦虑与精神内耗/人际与情感困扰）——看见执着本身，松手
+8. `结构归因.md`（kapital，工作倦怠与异化）——区分个人问题与制度问题，去自责化
+9. `知行合一·事上磨练.md`（chuanxi，焦虑与精神内耗/工作倦怠与异化）——知而不行则未知，在事上验证
+10. `致良知.md`（chuanxi，人际与情感困扰/意义与方向危机）——以内心是非为准则，摆脱评价依赖
+11. `齐物观.md`（zhuangzi，焦虑与精神内耗/人际与情感困扰）——放下是非之争与比较
+12. `控制二分法.md`（stoic，焦虑与精神内耗/人际与情感困扰）——把担心归入可控/不可控两栏
+13. `消极想象.md`（stoic，焦虑与精神内耗）——预设失去以珍惜当下，降低恐惧
+14. `意义三源.md`（frankl，意义与方向危机/工作倦怠与异化）——创造/体验/态度三路找意义
+
+每个文件都必须包含：frontmatter（name/voice/适用于/关联概念）、目的、适用/不适用情境、操作步骤（3-6 步，与角色卡"行动三原则"一致：具体/可检验/当天可做）、示例、常见错误 2-3 条。
+
+- [ ] **Step 3: 校验方法文件**
+
+Run:
+```bash
+node -e "const fs=require('fs');const vs=['laozi','lunyu','tanjing','mao','kapital','chuanxi','zhuangzi','stoic','frankl','zhuan-yi'];const files=fs.readdirSync('methods').filter(f=>f.endsWith('.md'));const errs=[];for(const f of files){const t=fs.readFileSync('methods/'+f,'utf8');const m=t.match(/^---\nname: (.+)\nvoice: (.+)\n适用于: \[(.+)\]/m);if(!m)errs.push(f+': frontmatter 缺 name/voice/适用于');else if(!vs.includes(m[2]))errs.push(f+': 非法 voice '+m[2]);else if(!/^\[.+\]$/.test(m[3]))errs.push(f+': 适用于 格式错');}console.log(errs.length?'✗ '+errs.join('; '):'✓ '+files.length+' 个方法文件 frontmatter 合法')"
+```
+Expected: `✓ 15 个方法文件 frontmatter 合法`
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add methods/
+git commit -m "methods: 方法步骤层 15 个核心方法（含操作步骤/适用情境/常见错误）"
+```
+
+---
+
+## Task 17: 声部导读层（guides/）
+
+**Files:**
+- Create: `guides/laozi.md` 及另外 9 份导读
+
+- [ ] **Step 1: 创建 `guides/laozi.md`（示范，完整内容直接写入）：**
+
+```markdown
+---
+voice: laozi
+名称: 老子·道德经
+---
+
+## 思想核心脉络
+《道德经》的核心是"道"与"反"：万物运行有自身的规律（道），规律表现为"反者道之动"——事物发展到极点必然反转。因此人最省力的活法不是"强为"而是"顺道而为"（无为不是不做，是不逆着规律硬做）。对精神困境而言，道德经提供"退一步"的智慧：匮乏感源于不知足，焦虑源于强求，消耗源于硬扛。
+
+## 主要概念（链接到 concepts/）
+- 知足（concept-laozi-001）
+- 反者道之动（concept-laozi-002）
+- 无为（concept-laozi-003）
+
+## 常用方法（链接到 methods/）
+- 知足观（methods/知足观.md）
+- 反者道之动（methods/反者道之动.md）
+
+## 在九声部中的位置
+与庄子同为道家：道德经讲"规律"，庄子讲"境界"。与斯多葛互为东西方镜像（老子"顺其自然" vs 斯多葛"顺应自然"），但老子更反强求、斯多葛更重行动边界。
+
+## 常见误读
+1. 把"无为"当躺平：无为是不逆势硬来，不是不作为。
+2. 把"不争"当认输：不争是省下力气做真正重要的，不是放弃。
+3. 把"知足"当安贫：知足针对匮乏感，不是阻止改善现实处境。
+
+## 回避边界
+- 真实资源危机（失业/破产/疾病）：先处理现实，不急着谈知足。
+- 需要果断行动时（被侵害/权益受损）："柔"会被误读为退让，此时用阳明"致良知"或斯多葛"内心堡垒"。
+```
+
+- [ ] **Step 2: 补齐其余 9 份导读（同样式），清单（voice → 名称）：**
+
+1. `lunyu.md`（孔子·论语）——核心脉络：修己安人、反求诸己、学以成人；位置：与阳明同为儒家（修身→心学）；误读：反求诸己=自我攻击（实为找可控项）
+2. `tanjing.md`（慧能·六祖坛经）——核心脉络：自性清净、烦恼即菩提、当下即悟；位置：与阳明"心外无物"呼应；误读："本来无一物"被用于冷漠回避
+3. `mao.md`（毛泽东·方法论）——核心脉络：实践论（认识循环）与矛盾论（抓主要矛盾）；位置：与阳明"事上磨练"同源；误读：斗争哲学外推到人际；边界：仅哲学方法论，不涉政治评价
+4. `kapital.md`（马克思·资本论）——核心脉络：异化与拜物教的结构性批判；位置：与毛"具体分析"接续；误读：结构归因=推卸个人责任（实为去自责+找可动点）
+5. `chuanxi.md`（王阳明·传习录）——核心脉络：知行合一、致良知、事上磨练；位置：儒释道枢纽，衔接孔子与禅宗；误读："心外无物"=唯心逃避（实为注意力管理）
+6. `zhuangzi.md`（庄子）——核心脉络：逍遥、齐物、依乎天理；位置：与老子互补（规律 vs 境界）；误读："安之若命"=躺平（实为不耗损于不可控）
+7. `stoic.md`（斯多葛·沉思录/手册）——核心脉络：控制二分法、内心堡垒、顺应自然；位置：与老子镜像、与禅宗互补；误读：斯多葛=压抑情绪（实为管理注意力）
+8. `frankl.md`（弗兰克尔·意义疗法）——核心脉络：意义意志、三来源、态度自由；位置：补东方思想的"现代意义危机"空白；误读：意义疗法=正能量鸡汤（实为实证方法）
+9. `zhuan-yi.md`（转译层合集）——定位说明：白话入口，不作思想裁决；各本一句话定位（菜根谭/被讨厌的勇气/当下的力量/我与地坛）
+
+- [ ] **Step 3: 校验导读文件**
+
+Run:
+```bash
+node -e "const fs=require('fs');const vs=['laozi','lunyu','tanjing','mao','kapital','chuanxi','zhuangzi','stoic','frankl','zhuan-yi'];const files=fs.readdirSync('guides').filter(f=>f.endsWith('.md'));const errs=[];for(const f of files){const t=fs.readFileSync('guides/'+f,'utf8');const m=t.match(/^---\nvoice: (.+)\n/m);if(!m)errs.push(f+': 缺 voice frontmatter');else if(!vs.includes(m[1]))errs.push(f+': 非法 voice '+m[1]);}console.log(errs.length?'✗ '+errs.join('; '):'✓ '+files.length+' 份导读 voice 合法')"
+```
+Expected: `✓ 10 份导读 voice 合法`
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add guides/
+git commit -m "guides: 声部导读层 10 份（思想脉络/位置/误读/回避边界）"
+```
+
+---
+
+## Task 18: 概念条目层（concepts/，含校验器 TDD 扩展）
+
+**Files:**
+- Create: `tests/fixtures/sample-concepts-ok.json`, `tests/fixtures/sample-concepts-bad.json`
+- Modify: `tests/validate-corpus.test.mjs`, `tests/validate-corpus.mjs`
+- Create: `concepts/mao.json` 及另外 9 个概念文件
+
+- [ ] **Step 1: 写失败测试（概念校验）**
+
+创建 `tests/fixtures/sample-concepts-ok.json`（关联语料 laozi-001 须存在于 `sample-ok.json`）：
+
+```json
+[
+  {
+    "id": "concept-laozi-001",
+    "name": "知足",
+    "声部": "laozi",
+    "定义": "感知到自己已有的足够。匮乏感是欲望的函数，不是财产的函数。",
+    "关联概念": [],
+    "关联语料": ["laozi-001"],
+    "适用场景": ["欲望与物质匮乏感"],
+    "禁用场景": []
+  }
+]
+```
+
+创建 `tests/fixtures/sample-concepts-bad.json`（非法声部 + 悬空关联语料 + 悬空关联概念）：
+
+```json
+[
+  {
+    "id": "concept-bad-001",
+    "name": "坏概念",
+    "声部": "不存在的声部",
+    "定义": "示范用。",
+    "关联概念": ["concept-none-999"],
+    "关联语料": ["corpus-none-999"],
+    "适用场景": ["焦虑与精神内耗"],
+    "禁用场景": []
+  }
+]
+```
+
+在 `tests/validate-corpus.test.mjs` 末尾追加：
+
+```javascript
+import { validateConcepts } from './validate-corpus.mjs';
+
+test('合法概念通过校验', () => {
+  const corpus = load('sample-ok.json');
+  const concepts = load('sample-concepts-ok.json');
+  const corpusIds = new Set(corpus.map(e => e.id));
+  assert.deepEqual(validateConcepts(concepts, corpusIds), []);
+});
+
+test('非法概念报出全部错误', () => {
+  const corpus = load('sample-ok.json');
+  const concepts = load('sample-concepts-bad.json');
+  const corpusIds = new Set(corpus.map(e => e.id));
+  const errors = validateConcepts(concepts, corpusIds);
+  assert.ok(errors.some(e => e.includes('非法声部')), `应报非法声部：${errors}`);
+  assert.ok(errors.some(e => e.includes('关联语料悬空')), `应报悬空语料：${errors}`);
+  assert.ok(errors.some(e => e.includes('关联概念悬空')), `应报悬空概念：${errors}`);
+});
+```
+
+- [ ] **Step 2: 运行测试确认失败**
+
+Run: `node --test tests/validate-corpus.test.mjs`
+Expected: FAIL —— `validateConcepts is not a function`（新测试报错，旧测试仍通过）
+
+- [ ] **Step 3: 扩展 `tests/validate-corpus.mjs`**：在 `validateCorpus` 之后新增 `validateConcepts`，并扩展命令行入口支持多目录与概念分流：
+
+```javascript
+export function validateConcepts(entries, corpusIds) {
+  const errors = [];
+  const seen = new Set();
+  const conceptIds = new Set(entries.map(e => e.id));
+  for (const entry of entries) {
+    for (const field of ['id', 'name', '声部', '定义', '关联语料']) {
+      if (!(field in entry) || entry[field] === '' || (Array.isArray(entry[field]) && entry[field].length === 0)) {
+        errors.push(`[concept:${entry.id ?? '??'}] 缺失字段: ${field}`);
+      }
+    }
+    if (seen.has(entry.id)) errors.push(`[concept:${entry.id}] 重复 id`);
+    seen.add(entry.id);
+    if (!VOICES.includes(entry['声部'])) errors.push(`[concept:${entry.id}] 非法声部: ${entry['声部']}`);
+    for (const cid of entry['关联语料'] ?? []) {
+      if (!corpusIds.has(cid)) errors.push(`[concept:${entry.id}] 关联语料悬空: ${cid}`);
+    }
+    for (const rid of entry['关联概念'] ?? []) {
+      if (!conceptIds.has(rid)) errors.push(`[concept:${entry.id}] 关联概念悬空: ${rid}`);
+    }
+  }
+  return errors;
+}
+```
+
+命令行入口整段替换为（支持 `node tests/validate-corpus.mjs corpus concepts`）：
+
+```javascript
+if (import.meta.url === `file://${process.argv[1]}`) {
+  import('node:fs').then(({ readdirSync, readFileSync }) => {
+    const dirs = process.argv.slice(2).length ? process.argv.slice(2) : ['corpus'];
+    const all = [];
+    for (const dir of dirs) {
+      for (const f of readdirSync(dir).filter(f => f.endsWith('.json'))) {
+        all.push(...JSON.parse(readFileSync(`${dir}/${f}`, 'utf8')));
+      }
+    }
+    const corpus = all.filter(e => !String(e.id).startsWith('concept-'));
+    const concepts = all.filter(e => String(e.id).startsWith('concept-'));
+    const corpusIds = new Set(corpus.map(e => e.id));
+    const errors = [...validateCorpus(corpus), ...validateConcepts(concepts, corpusIds)];
+    if (errors.length) {
+      console.error(`✗ ${errors.length} 个错误:`);
+      for (const e of errors) console.error(`  ${e}`);
+      process.exit(1);
+    }
+    console.log(`✓ ${corpus.length} 条语料 + ${concepts.length} 条概念全部合法（${dirs.join(' + ')}）`);
+  });
+}
+```
+
+- [ ] **Step 4: 运行测试确认通过**
+
+Run: `node --test tests/validate-corpus.test.mjs`
+Expected: PASS（4 个测试全过）
+
+- [ ] **Step 5: 创建 `concepts/mao.json` 示范（前 3 条完整写入，其余在 Step 6 补齐）：**
+
+```json
+[
+  {
+    "id": "concept-mao-001",
+    "name": "主要矛盾",
+    "声部": "mao",
+    "定义": "多个矛盾并存时，规定或影响其他矛盾的那个主矛盾。找到它，其他问题会跟着松动；抓不住它，力量会被分散。",
+    "关联概念": ["concept-mao-002"],
+    "关联语料": ["mao-002"],
+    "适用场景": ["焦虑与精神内耗", "工作倦怠与异化"],
+    "禁用场景": []
+  },
+  {
+    "id": "concept-mao-002",
+    "name": "矛盾转化",
+    "声部": "mao",
+    "定义": "矛盾双方在一定条件下互相转化——困到极点可能是转机的前夜，优势也可能变成负担。转化的条件是'一定的'，要去创造它。",
+    "关联概念": ["concept-mao-001"],
+    "关联语料": ["mao-002", "laozi-002"],
+    "适用场景": ["意义与方向危机"],
+    "禁用场景": []
+  },
+  {
+    "id": "concept-mao-003",
+    "name": "调查研究",
+    "声部": "mao",
+    "定义": "没有调查就没有发言权：对重要决定，先用事实代替想象——列数据、观察、亲身体验，再下判断。",
+    "关联概念": [],
+    "关联语料": ["mao-001"],
+    "适用场景": ["焦虑与精神内耗"],
+    "禁用场景": []
+  }
+]
+```
+
+- [ ] **Step 6: 补齐全部概念至 80-120 条（每声部 8-15 条），各声部核心概念清单：**
+
+- `mao.json`：主要矛盾、矛盾转化、调查研究、实事求是、两点论与重点论、实践-认识循环、战略藐视战术重视、持久战、批评与自我批评、一分为二（10 个）
+- `laozi.json`：知足、反者道之动、无为、柔弱胜刚强、不争、上善若水、少则得、知止不殆、飘风骤雨、大巧若拙（10 个）
+- `lunyu.json`：反求诸己、忠恕、君子、学而时习、三省吾身、欲速则不达、和而不同、岁寒松柏、不迁怒、讷言敏行（10 个）
+- `tanjing.json`：明心见性、烦恼即菩提、当下、破执、无念、不执两边、自性、即心即佛、自悟自修、随所住处恒安乐（10 个）
+- `kapital.json`：异化、商品拜物教、剩余价值、资本人格化、相对剩余价值、时间节约、工作日、相对过剩人口、货币拜物教、生产社会化（10 个）
+- `chuanxi.json`：知行合一、致良知、事上磨练、心外无物、省察克治、不动心、立志、此心光明（8 个）
+- `zhuangzi.json`：逍遥、齐物、无用之用、安之若命、游刃有余、相忘江湖、物物不物于物、坐忘（8 个）
+- `stoic.json`：控制二分、消极想象、内心堡垒、当下、顺应自然、障碍即道路、角色责任、斯多葛式晨省（8 个）
+- `frankl.json`：意义三源、态度自由、意义意志、存在空虚、悲剧乐观主义、刺激-反应空间、生命提问（7 个）
+- `zhuan-yi.json`：课题分离、不寻求认可、临在、向内的意义、接纳自我、共同体感觉（6 个）
+
+每个概念的"关联语料"必须引用真实存在的语料 id（对应声部 corpus 文件）；"关联概念"可空数组。
+
+- [ ] **Step 7: 全量校验（corpus + concepts 一起跑）**
+
+Run: `node tests/validate-corpus.mjs corpus concepts`
+Expected: `✓ 280-440 条语料 + 80-120 条概念全部合法（corpus + concepts）`，无任何悬空引用
+
+- [ ] **Step 8: Commit**
+
+```bash
+git add tests/ concepts/
+git commit -m "concepts: 概念条目层（N 条，含校验器 TDD 扩展与悬空引用检查）"
+```
+
+---
+
+## Task 19: 对话示例层（examples/）
+
+**Files:**
+- Create: `examples/焦虑与精神内耗-01.md` 及另外 4-9 个示例
+
+- [ ] **Step 1: 创建 `examples/焦虑与精神内耗-01.md`（示范，完整内容直接写入）：**
+
+```markdown
+# 示例：焦虑与精神内耗（反刍思维）
+
+## 背景
+深夜反刍型来访者，白天说错一句话，反复咀嚼。
+
+## 用户输入
+我总在深夜回想白天说错的一句话，反复咀嚼"他是不是生气了""我是不是很蠢"，越想越睡不着，第二天更糟。我知道没必要，但控制不住。
+
+## 明镜回答
+先接住你——这种反复咀嚼不是矫情，是大脑在"试图解决问题"，只是用错了对象。（接住）
+你的困境属于"焦虑与精神内耗"，最典型的一种：反刍思维。表面问题是"那句话"，深层问题是"你把'他怎么看'当成了必须解决的任务"。（诊断）
+我用〈控制二分法〉看你的问题——因为它的第一课就是分清"谁的事"。他有没有生气、他怎么看，是**他的课题**，你控制不了，也不归你负责；你能控制的只有两件事：你今晚睡不睡，以及明天要不要主动说一句"昨天那句话我说得不合适"。（点破+处方·斯多葛）
+今晚只做一件事：睡前把"他怎么看"写在纸上，折起来放枕边，告诉自己"这是他的作业，明天再收"；明天白天还惦记，就问自己一句——"这句话我明天还能不能补救？"能，就去做；不能，就放下。（行动）
+
+## 点评
+- 诊断：识别反刍思维的深层结构（评价依赖），对应矩阵"焦虑与内耗"格
+- 方法：斯多葛控制二分法（stoic-001），符合首选；未违规使用斗争哲学
+- 行动："写下来+折起来"具体可执行可检验；"明天能不能补救"给了结束反刍的判断标准
+- 语气：先接住（不指责"你太敏感"）再点破（"他的课题"），符合"慈悲不纵容"
+```
+
+- [ ] **Step 2: 补齐其余示例，每类困境至少 1 个（清单与素材来源）：**
+
+1. `工作倦怠与异化-01.md`（素材：T2-01 加班异化——资本论结构归因 + 毛抓主要矛盾；行动：写"最空虚的具体时刻"）
+2. `意义与方向危机-01.md`（素材：T1-01 中年意义真空——弗兰克尔意义三源 + 慧能当下；慎用资本论）
+3. `人际与情感困扰-01.md`（素材：T4-01 被背叛——孔子反求诸己+阳明致良知；不得煽动报复）
+4. `欲望与物质匮乏感-01.md`（素材：T5-01 攀比焦虑——老子知足观+马克思商品拜物教；行动：朋友圈处理办法）
+5. （可选第二组）`工作倦怠与异化-02.md` / `焦虑与精神内耗-02.md` 等，取试金石其余案例
+
+每个示例必须包含四节（背景/用户输入/明镜回答/点评），明镜回答完整走"接住→诊断→点破+处方→行动"四步且与解药矩阵一致。
+
+- [ ] **Step 3: 校验示例覆盖**
+
+Run:
+```bash
+node -e "const fs=require('fs');const files=fs.readdirSync('examples').filter(f=>f.endsWith('.md'));const cats=['焦虑与精神内耗','工作倦怠与异化','意义与方向危机','人际与情感困扰','欲望与物质匮乏感'];const missing=cats.filter(c=>!files.some(f=>f.startsWith(c)));console.log(files.length+' 个示例；缺类型: '+(missing.join(',')||'无'))"
+```
+Expected: `N 个示例；缺类型: 无`（N≥5）
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add examples/
+git commit -m "examples: 对话示例层（N 个完整示例，风格锚）"
+```
+
+---
+
 ## 自检（plan self-review）
 
-- **Spec 覆盖**：设计文档 §8（语料规范/条目结构/分级）→ Task 3-13；§4 解药矩阵 → Task 14 Step 3 覆盖核对；§9 角色卡（v0.2 双模式/命令协议/学习模式）→ 阶段 1（`eval/`，实测工具）+ Task 15（学习模式课程大纲）；§10 阶段 1/2 → Task 1-2 / Task 3-15。无缺口。
-- **占位符检查**：无 TBD/TODO；每个语料 Task 均含完整示范条目 JSON 与必覆盖概念清单。
-- **类型一致性**：声部标识 `laozi/lunyu/tanjing/mao/kapital/chuanxi/zhuangzi/stoic/frankl/zhuan-yi` 在 Task 3 白名单、各语料 Task 示范条目、Task 14 核对命令三处一致；困境类型五类名称在 Task 3、Task 1 核对表、各示范条目三处一致。
+- **Spec 覆盖**：设计文档 §8（知识资产四层：corpus/methods/guides/concepts/examples）→ Task 3-13（corpus）、Task 16（methods）、Task 17（guides）、Task 18（concepts+校验扩展）、Task 19（examples）；§4 解药矩阵 → Task 14 Step 3 覆盖核对；§9 角色卡（v0.3 双模式/命令协议/学习模式/方法名表）→ 阶段 1（`eval/`，实测工具）+ Task 15（学习模式课程大纲）+ Task 16（方法步骤供处方引用）；§10 阶段 1/2 → Task 1-2 / Task 3-19。无缺口。
+- **占位符检查**：无 TBD/TODO；每个语料/方法/导读/概念/示例 Task 均含完整示范内容与补齐清单。
+- **类型一致性**：声部标识 `laozi/lunyu/tanjing/mao/kapital/chuanxi/zhuangzi/stoic/frankl/zhuan-yi` 在 Task 3 白名单、各 Task 示范条目、Task 16/17/18 校验命令、Task 14 核对命令五处一致；困境类型五类名称在 Task 3、Task 1 核对表、各示范条目四处一致；概念 id 统一 `concept-<voice>-<三位序号>` 前缀（Task 18 校验分流依据）；概念引用语料 id 与 corpus 文件 id 一一对应（Task 18 悬空检查）。
