@@ -114,16 +114,27 @@ Future<_Result> _runGroup(
   PromptBuilder prompt,
   VectorSearch search,
 ) async {
-  // 组 C：CLI 逻辑（安全路由 + 检索 + fragile 规则）
+  // 组 C：CLI 逻辑（安全路由 + 检索 + fragile/medical/vague 规则）
   if (group == 'C') {
     if (VectorSearch.isDangerous(input)) {
       return const _Result('__SAFETY_TEMPLATE__（未调用 LLM）', true);
     }
     final hits = search.search(input, topK: 4, safeMode: true);
     final fragile = VectorSearch.kFragileKeywords.any(input.contains);
-    final extraRule = fragile ? PromptBuilder.fragileRule : null;
+    final medical = VectorSearch.isMedical(input);
+    final vague = VectorSearch.isVague(input);
+    final rules = <String>[
+      if (fragile) PromptBuilder.fragileRule,
+      if (medical) PromptBuilder.medicalRule,
+      if (vague) PromptBuilder.vagueRule,
+    ];
+    final extraRule = rules.isEmpty ? null : rules.join('\n');
     final system = prompt.system(hits.map((h) => h.entry).toList(), extraRule: extraRule);
     final text = await _collect(llm, system, input);
+    // 对齐 CLI：medical 命中后确定性追加就医提醒
+    if (medical) {
+      return _Result('$text\n\n【就医提醒】你提到正在服药/就医。精神科/心理药物的调整请务必与你的主治医生沟通，不要自行停药或改量；如果持续难受，请尽快复诊。以上内容只作陪伴，不替代治疗。', false);
+    }
     return _Result(text, false);
   }
   // 组 A：普通 LLM（基线）

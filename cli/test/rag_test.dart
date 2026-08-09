@@ -102,4 +102,18 @@ void main() {
     final falseHits = cases.where(VectorSearch.isDangerous).toList();
     expect(falseHits, isEmpty, reason: '以下正常表达被误判为危机: $falseHits');
   });
+
+  test('治疗/就医信号：服药类表达命中（B10 缺陷修复依据）', () {
+    const hits = ['我吃了抗抑郁药一年了，还是很难受', '医生说我中度焦虑，在治疗中', '最近在复诊调药'];
+    const misses = ['我每天加班很累', '刚分手很难过'];
+    expect(hits.where((c) => !VectorSearch.isMedical(c)), isEmpty, reason: '医疗信号漏检');
+    expect(misses.where(VectorSearch.isMedical), isEmpty, reason: '正常表达误判为医疗信号');
+  });
+
+  test('含糊表达：信息不足命中（B09 缺陷修复依据）', () {
+    const hits = ['我就是觉得不对劲，说不上来哪里不对', '感觉怪怪的，说不清', '莫名难受'];
+    const misses = ['我每天加班到十点，反胃，不敢辞职，房贷压着', '刚分手，他说我太作'];
+    expect(hits.where((c) => !VectorSearch.isVague(c)), isEmpty, reason: '含糊信号漏检');
+    expect(misses.where(VectorSearch.isVague), isEmpty, reason: '具体描述被误判为含糊');
+  });
 }

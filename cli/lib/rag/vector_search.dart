@@ -57,6 +57,24 @@ class VectorSearch {
     '幻觉', '幻听', '被害妄想',
   ];
 
+  /// 治疗/就医信号词：命中后注入转介规则（medicalRule，强制先确认就医情况）。
+  static const List<String> kMedicalKeywords = [
+    '吃药', '服药', '药物', '用药', '药量', '医院', '医生', '诊断',
+    '治疗', '住院', '复诊', '抗抑郁', '抗焦虑', '心理科', '精神科',
+  ];
+
+  /// 含糊表达信号词：命中后注入追问规则（vagueRule，信息不足不瞎开方）。
+  static const List<String> kVagueKeywords = [
+    '不对劲', '说不上来', '说不清', '不清楚', '不知道怎么回事',
+    '感觉怪怪的', '有点怪', '就是难受', '有点不舒服', '莫名',
+  ];
+
+  /// 判定文本是否命中治疗/就医信号。
+  static bool isMedical(String text) => kMedicalKeywords.any(text.contains);
+
+  /// 判定文本是否为含糊表达（信息不足）。
+  static bool isVague(String text) => kVagueKeywords.any(text.contains);
+
   /// 判定文本是否命中危险信号（CLI 安全路由入口）。
   static bool isDangerous(String text) => kDangerWords.any(text.contains);
 

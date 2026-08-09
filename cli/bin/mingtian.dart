@@ -221,9 +221,13 @@ Future<void> main(List<String> args) async {
     }
 
     final fragile = VectorSearch.kFragileKeywords.any(userText.contains);
+    final medical = VectorSearch.isMedical(userText);
+    final vague = VectorSearch.isVague(userText);
     final rules = <String>[
       if (awaiting) PromptBuilder.awaitingRule,
       if (fragile) PromptBuilder.fragileRule,
+      if (medical) PromptBuilder.medicalRule,
+      if (vague) PromptBuilder.vagueRule,
     ];
     final extraRule = rules.isEmpty ? null : rules.join('\n');
     final messages = <Map<String, String>>[
@@ -233,6 +237,10 @@ Future<void> main(List<String> args) async {
     ];
     final reply = await _chat(llm, prompt, search, messages: messages, title: '明镜');
     if (reply == null) continue;
+    if (medical) {
+      stdout.writeln('\n【就医提醒】你提到正在服药/就医。精神科/心理药物的调整请务必与你的主治医生沟通，'
+          '不要自行停药或改量；如果持续难受，请尽快复诊。以上内容只作陪伴，不替代治疗。');
+    }
 
     // 更新历史（保留最近 config.history 轮）
     history.addAll([
