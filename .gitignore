@@ -1,4 +1,6 @@
 .reasonix/
+.mimocode/
+.zcode/
 
 # 明镜 CLI — 密钥与本地产物（绝不提交）
 .env
