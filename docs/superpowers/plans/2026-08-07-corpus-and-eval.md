@@ -1,6 +1,8 @@
 # 明镜精神导师：实测工具包 + 语料库建设 实施计划
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+>
+> **执行状态（2026-08-09）：全部 20 Task 已完成并提交**（eval/、corpus/、methods/、guides/、concepts/、examples/、paperkit/、tests/ 校验器）；本计划保留为执行记录。
 
 **Goal:** 交付阶段 1（15 个试金石困境的实测工具包）与阶段 2（九声部语料库：主声部 5×40-60 条 + 补声部 4×15-25 条 + 转译层 4×5-10 条，JSON 结构化并通过校验脚本），使角色卡 v0.2（含双模式/命令协议/学习模式）可被系统实测打磨、语料可被检索引用与学习路径调用。
 
