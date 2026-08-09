@@ -1,0 +1,14 @@
+name: mingtian
+description: 明镜——精神导师 CLI（角色卡 v0.6 + RAG 检索 + LLM 生成）
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  args: ^2.4.0
+  dio: ^5.4.0
+
+dev_dependencies:
+  test: ^1.24.0
