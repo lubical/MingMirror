@@ -139,6 +139,19 @@ Future<void> main(List<String> args) async {
   var awaiting = false;
   var privacyAcknowledged = false;
 
+  // 隐私同意（云端推理告知）：任何 LLM 调用前必须通过。
+  Future<bool> ensureConsent() async {
+    if (privacyAcknowledged) return true;
+    stdout.writeln('本条消息将发送至云端（$provider）处理。输入 y 同意并继续，或其他键取消本次发送。');
+    final ack = stdin.readLineSync(encoding: utf8)?.trim().toLowerCase();
+    if (ack != 'y') {
+      stdout.writeln('已取消发送。可修改措辞后重发，或输入 /exit 退出。');
+      return false;
+    }
+    privacyAcknowledged = true;
+    return true;
+  }
+
   while (true) {
     stdout.write('\n你 > ');
     final line = stdin.readLineSync(encoding: utf8);
@@ -163,6 +176,7 @@ Future<void> main(List<String> args) async {
         stdout.writeln('⚠ 未配置 API key，/对比 不可用。');
         continue;
       }
+      if (!await ensureConsent()) continue;
       final parts = input.substring(3).trim().split(RegExp(r'\s+')).where((s) => s.isNotEmpty).toList();
       if (parts.length < 2) {
         stdout.writeln('用法: /对比 <声部A> <声部B>，例如 /对比 庄子 斯多葛');
@@ -181,6 +195,7 @@ Future<void> main(List<String> args) async {
         stdout.writeln('⚠ 未配置 API key，/学习 不可用。');
         continue;
       }
+      if (!await ensureConsent()) continue;
       await _chat(llm, prompt, search,
           messages: [
             {'role': 'system', 'content': prompt.system(const [], extraRule: PromptBuilder.learnRule)},
@@ -210,15 +225,7 @@ Future<void> main(List<String> args) async {
     }
 
     // 首次发送前的隐私同意（云端推理告知，评审 P0-4）
-    if (!privacyAcknowledged) {
-      stdout.writeln('本条消息将发送至云端（$provider）处理。输入 y 同意并继续，或其他键取消本次发送。');
-      final ack = stdin.readLineSync(encoding: utf8)?.trim().toLowerCase();
-      if (ack != 'y') {
-        stdout.writeln('已取消发送。可修改措辞后重发，或输入 /exit 退出。');
-        continue;
-      }
-      privacyAcknowledged = true;
-    }
+    if (!await ensureConsent()) continue;
 
     final fragile = VectorSearch.kFragileKeywords.any(userText.contains);
     final medical = VectorSearch.isMedical(userText);
