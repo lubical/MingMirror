@@ -1,4 +1,4 @@
-# AGENTS.md — MentalTutor（明镜）
+# AGENTS.md — MingMirror（明镜）
 
 **明镜**：熔炼儒道佛 + 毛泽东 + 资本论等九声部的"精神导师"AI。三个载体：角色卡粘贴（`prompts/`）、本地 CLI（`cli/`，Dart）、纸版工具包（`paperkit/`）。设计权威源：`docs/superpowers/specs/2026-08-07-spiritual-mentor-design.md`（当前 v0.7）。
 

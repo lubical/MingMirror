@@ -84,7 +84,7 @@ dart run cli/bin/mingtian.dart
 
 ```powershell
 git clone <本仓库>
-cd MentalTutor
+cd MingMirror
 Copy-Item .env.example .env   # 编辑 .env 填入 API key
 dart run cli/bin/mingtian.dart
 ```
