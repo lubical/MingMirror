@@ -1,2 +1,14 @@
 .reasonix/
 
+# 明镜 CLI — 密钥与本地产物（绝不提交）
+.env
+*.env
+.env.local
+.env.*.local
+
+# Dart 构建产物
+cli/.dart_tool/
+cli/build/
+
+# 预计算向量数据（可由 tools/precompute_vectors.py 重新生成）
+data/
