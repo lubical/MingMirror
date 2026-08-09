@@ -52,7 +52,8 @@ export function validateConcepts(entries, corpusIds) {
 }
 
 // 命令行入口：node tests/validate-corpus.mjs corpus concepts
-if (import.meta.url === `file://${process.argv[1]?.replace(/\\/g, '/')}`) {
+import { pathToFileURL } from 'node:url';
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   import('node:fs').then(({ readdirSync, readFileSync }) => {
     const dirs = process.argv.slice(2).length ? process.argv.slice(2) : ['corpus'];
     const all = [];
