@@ -10,7 +10,7 @@ import 'package:mingtian/rag/corpus_loader.dart';
 import 'package:mingtian/rag/vector_search.dart';
 
 const kUsage = '''
-明镜 CLI v0.1 —— 精神导师（角色卡 v0.6 + RAG 检索 + LLM 生成）
+明镜 CLI v0.2 —— 精神导师（角色卡自动发现 + 检索 + LLM 流式生成）
 
 用法:
   dart run cli/bin/mingtian.dart [--repo <仓库根>] [--provider glm|deepseek|qwen] [--top-k N]
@@ -31,9 +31,54 @@ const kUsage = '''
   /诊 <困境>          显式求助模式（默认）
   直接输入困境描述     求助模式
 
-安全提示: 本工具不替代专业心理帮助。涉及自伤/自杀/家暴等危机，请优先联系
-专业资源（心理援助热线 400-161-9995；家暴 12338/110）。
+隐私: 本工具为本地客户端，推理由服务商云端完成——对话内容会上传至所选 provider。
+安全提示: 本工具不替代专业心理帮助。心理援助热线 12356（全国统一）；家暴 12338；
+即时危险请拨打 110/120。
 ''';
+
+/// 确定性安全模板：危险信号命中时输出（不调用 LLM、不处方思想）。
+const String _kSafetyTemplate = '''
+明镜（安全模式）：
+听到这些，我很担心你此刻的安全。现在最重要的不是讲道理，是先确保你（或你担心的人）安全。
+
+请立即联系：
+· 心理援助热线 12356（全国统一，24 小时）
+· 若正在发生即时危险或已自伤：拨打 110 / 120
+· 家暴/侵害场景：可拨打 12338（妇女维权热线）或 110
+
+如果你愿意，可以继续告诉我发生了什么，我会在这里陪着你——但请先确保自己在一个安全的地方。
+你不需要独自面对。
+
+（输入 /exit 退出，或继续输入任何内容我都会回应。）''';
+
+/// 自动发现 prompts/ 下版本号最高的角色卡。
+String _discoverRoleCard(String promptsDir) {
+  final dir = Directory(promptsDir);
+  if (!dir.existsSync()) return '';
+  final re = RegExp(r'mingtian-v(\d+)\.(\d+)\.md');
+  String best = '';
+  var bestMajor = -1;
+  var bestMinor = -1;
+  for (final f in dir.listSync().whereType<File>()) {
+    final m = re.firstMatch(f.uri.pathSegments.last);
+    if (m != null) {
+      final ma = int.parse(m.group(1)!);
+      final mi = int.parse(m.group(2)!);
+      if (ma > bestMajor || (ma == bestMajor && mi > bestMinor)) {
+        bestMajor = ma;
+        bestMinor = mi;
+        best = f.path;
+      }
+    }
+  }
+  return best;
+}
+
+/// 从角色卡路径提取版本字符串（如 v0.8）。
+String _roleCardVersion(String path) {
+  final m = RegExp(r'mingtian-(v\d+\.\d+)\.md').firstMatch(path);
+  return m?.group(1) ?? '?';
+}
 
 Future<void> main(List<String> args) async {
   final parser = ArgParser()
@@ -57,23 +102,29 @@ Future<void> main(List<String> args) async {
       ? int.tryParse(parsed['top-k'] as String) ?? config.topK
       : config.topK;
 
-  // 加载资产
-  final roleCardPath = '$repo${Platform.pathSeparator}prompts${Platform.pathSeparator}mingtian-v0.6.md';
-  if (!File(roleCardPath).existsSync()) {
-    stderr.writeln('未找到角色卡: $roleCardPath');
-    stderr.writeln('请用 --repo 指定仓库根目录（含 prompts/mingtian-v0.6.md）');
+  // 加载资产（角色卡自动发现最高版本，消除硬编码漂移）
+  final roleCardPath = _discoverRoleCard('$repo${Platform.pathSeparator}prompts');
+  if (roleCardPath.isEmpty) {
+    stderr.writeln('未找到角色卡: 请确认 $repo${Platform.pathSeparator}prompts 下存在 mingtian-vX.Y.md');
+    stderr.writeln('可用 --repo 指定仓库根目录');
     exitCode = 1;
     return;
   }
   final prompt = await PromptBuilder.load(roleCardPath);
+  final roleCardVersion = _roleCardVersion(roleCardPath);
   final corpus = Corpus.load('$repo${Platform.pathSeparator}corpus');
   final concepts = Concepts.load('$repo${Platform.pathSeparator}concepts');
   final search = VectorSearch(corpus);
-  stdout.writeln('明镜 v0.6 ｜ provider=$provider model=$model ｜ 语料 ${corpus.entries.length} 条 ｜ 概念 ${concepts.entries.length} 条');
+  stdout.writeln('明镜 $roleCardVersion ｜ provider=$provider model=$model ｜ 语料 ${corpus.entries.length} 条 ｜ 概念 ${concepts.entries.length} 条');
   stdout.writeln('输入 /help 查看用法；/exit 退出。');
 
   if (config.apiKey.isEmpty) {
     stdout.writeln('\n⚠ 未配置 MINGTIAN_API_KEY（环境变量或仓库根 .env）。诊断/对比/学习功能不可用；/概念 仍可用。');
+  } else {
+    // 数据出境告知（本地客户端、云端推理）
+    stdout.writeln('\n⚠ 隐私提示：本工具为本地客户端，但推理由「$provider」云端完成——'
+        '你的对话内容会发送至 ${pcfg.baseUrl}。涉及健康、关系、创伤等敏感信息请知悉。'
+        '首次使用建议：不输入真实姓名/工作单位/住址等可识别身份的信息。');
   }
   final llm = config.apiKey.isEmpty
       ? null
@@ -86,6 +137,7 @@ Future<void> main(List<String> args) async {
   // 会话状态
   final history = <Map<String, String>>[];
   var awaiting = false;
+  var privacyAcknowledged = false;
 
   while (true) {
     stdout.write('\n你 > ');
@@ -141,10 +193,11 @@ Future<void> main(List<String> args) async {
     // 求助模式（默认）：诊断对话
     final userText = input.startsWith('/诊') ? input.substring(3).trim() : input;
 
-    // CLI 层安全兜底：危险词命中 → 打印安全提示（不阻断 LLM，LLM 端由角色卡安全条款处理）
-    final dangerous = VectorSearch.kDangerWords.any(userText.contains);
+    // CLI 层确定性安全路由：危险信号命中 → 阻断哲学处方，输出固定安全模板
+    final dangerous = VectorSearch.isDangerous(userText);
     if (dangerous) {
-      stdout.writeln('⚠ 检测到可能的危机信号：本工具不替代专业帮助。涉及自伤/自杀请拨打心理援助热线 400-161-9995；家暴可拨打 12338 或 110。');
+      stdout.writeln(_kSafetyTemplate);
+      continue;
     }
 
     final hits = search.search(userText, topK: topK, safeMode: true);
@@ -154,6 +207,17 @@ Future<void> main(List<String> args) async {
         stdout.writeln('  - 【${h.entry.id}】"${h.entry.text}"（${h.entry.source}）');
       }
       continue;
+    }
+
+    // 首次发送前的隐私同意（云端推理告知，评审 P0-4）
+    if (!privacyAcknowledged) {
+      stdout.writeln('本条消息将发送至云端（$provider）处理。输入 y 同意并继续，或其他键取消本次发送。');
+      final ack = stdin.readLineSync(encoding: utf8)?.trim().toLowerCase();
+      if (ack != 'y') {
+        stdout.writeln('已取消发送。可修改措辞后重发，或输入 /exit 退出。');
+        continue;
+      }
+      privacyAcknowledged = true;
     }
 
     final fragile = VectorSearch.kFragileKeywords.any(userText.contains);

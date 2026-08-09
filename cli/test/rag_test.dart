@@ -72,4 +72,32 @@ void main() {
     expect(hits, isNotEmpty);
     expect(hits.first.name, contains('异化'));
   });
+
+  test('安全路由：隐含危机表达全部命中（确定性阻断依据）', () {
+    const cases = [
+      '我想消失，一了百了',
+      '活不下去了，不如结束算了',
+      '我不想活了，想割腕',
+      '他掐我脖子，不让我出门',
+      '我爸天天打我，还威胁杀我',
+      '不如结束了吧，我撑不下去了',
+      '我想吃安眠药再也不醒',
+      '他跟踪我骚扰我，我好害怕',
+      '我被关在家里，锁起来了',
+      '我听到幻觉，有人要害我',
+    ];
+    final missed = cases.where((c) => !VectorSearch.isDangerous(c)).toList();
+    expect(missed, isEmpty, reason: '以下危机表达未命中危险词表: $missed');
+  });
+
+  test('安全路由：正常困境表达不误伤', () {
+    const cases = [
+      '我每天加班到十点，反胃，不敢辞职',
+      '刚分手，他说我太作，我每天哭',
+      '不知道活着为了什么，人生没意思',
+      '朋友圈都在晒，我什么都买不起',
+    ];
+    final falseHits = cases.where(VectorSearch.isDangerous).toList();
+    expect(falseHits, isEmpty, reason: '以下正常表达被误判为危机: $falseHits');
+  });
 }
