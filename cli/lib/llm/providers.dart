@@ -10,7 +10,7 @@ const kProviders = <String, ProviderConfig>{
   'glm': ProviderConfig(
     'glm',
     'https://open.bigmodel.cn/api/paas/v4',
-    'glm-4-flash',
+    'glm-5.2',
   ),
   'deepseek': ProviderConfig(
     'deepseek',

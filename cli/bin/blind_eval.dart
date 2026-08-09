@@ -63,7 +63,8 @@ Future<void> main(List<String> args) async {
   final search = VectorSearch(corpus);
 
   final date = DateTime.now().toIso8601String().substring(0, 10);
-  final outPath = '$repo${Platform.pathSeparator}eval${Platform.pathSeparator}blind-results-$date.jsonl';
+  final defaultOut = '$repo${Platform.pathSeparator}eval${Platform.pathSeparator}blind-results-$date.jsonl';
+  final outPath = args.contains('--out') ? args[args.indexOf('--out') + 1] : defaultOut;
   final out = File(outPath).openWrite(mode: FileMode.append);
   // --only <caseId>：只重跑该案例的 C 组（安全路由相关，A/B 不受词表影响）
   final only = args.contains('--only') ? args[args.indexOf('--only') + 1] : '';
