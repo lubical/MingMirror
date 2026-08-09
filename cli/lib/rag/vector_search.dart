@@ -122,7 +122,7 @@ class VectorSearch {
         if (b != null && b > voiceBonus) voiceBonus = b;
       }
       if (fragile) {
-        if (e.voice == 'mao') voiceBonus -= 0.3;
+        if (e.voice == 'mao' || e.voice == 'lunyu') voiceBonus -= 0.3;
         if (const {'tanjing', 'zhuangzi', 'stoic', 'frankl'}.contains(e.voice)) {
           voiceBonus += 0.3;
         }
