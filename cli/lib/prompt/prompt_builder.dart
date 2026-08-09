@@ -12,10 +12,14 @@ class PromptBuilder {
   static Future<PromptBuilder> load(String path) async =>
       PromptBuilder(await File(path).readAsString());
 
-  /// system 消息：角色卡 + 检索语料 + 可选附加规则（如追问状态）。
+  /// system 消息：角色卡 + 检索语料 + 可选附加规则（如追问/脆弱态状态）。
   String system(List<CorpusEntry> ragHits, {String? extraRule}) {
     final buf = StringBuffer(roleCard.trimRight());
-    buf.write('\n\n## 检索到的参考语料（仅作引用来源，处方决策以解药矩阵为准，不得引用未列出的语料）\n');
+    buf.write('\n\n## 检索到的参考语料（处方声部与引文约束）\n');
+    buf.write('必须遵守：\n');
+    buf.write('1. 处方声部按解药矩阵优先：先用首选声部（若首选在对话中失效再切辅选）。\n');
+    buf.write('2. 引用原文必须取自上方参考语料，并给出处；语料中没有对应原文时，\n');
+    buf.write('   不得自造原文——化用大意并标注"大意转述"即可。\n');
     if (ragHits.isEmpty) {
       buf.write('（本轮无参考语料，按角色卡自行回应）\n');
     } else {
@@ -40,6 +44,13 @@ class PromptBuilder {
       '上一轮你发出了追问，正在等待来访者回答。本轮：不要重复开方，不要重复同一个追问。'
       '若对方已回答，基于回答继续（信息仍不足可再追问一次，否则进入处方）；'
       '若对方未直接回答，温和地把对话引回那个追问。';
+
+  /// 脆弱态规则：刚受打击/哭泣/崩溃边缘时注入 system（v0.6 脆弱态条款的 CLI 层强制）。
+  static const fragileRule =
+      '来访者处于脆弱状态（刚受打击、哭泣、崩溃边缘）。按因材施教规则：'
+      '首回合以接住为主，行动不超过 1 条，且行动是非认知性的（如允许哭、休息、出门走走），'
+      '不要给自我反思/分析类任务（写感受、换位思考、复盘关系等），'
+      '不要引用可能加重自我否定的原文（如反求诸己、内自省）。';
 
   /// 对比命令的系统提示（追加在角色卡后）。
   static String compareRule(String a, String b) =>

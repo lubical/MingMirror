@@ -156,8 +156,14 @@ Future<void> main(List<String> args) async {
       continue;
     }
 
+    final fragile = VectorSearch.kFragileKeywords.any(userText.contains);
+    final rules = <String>[
+      if (awaiting) PromptBuilder.awaitingRule,
+      if (fragile) PromptBuilder.fragileRule,
+    ];
+    final extraRule = rules.isEmpty ? null : rules.join('\n');
     final messages = <Map<String, String>>[
-      {'role': 'system', 'content': prompt.system(hits.map((h) => h.entry).toList(), extraRule: awaiting ? PromptBuilder.awaitingRule : null)},
+      {'role': 'system', 'content': prompt.system(hits.map((h) => h.entry).toList(), extraRule: extraRule)},
       ...history,
       {'role': 'user', 'content': PromptBuilder.user(userText)},
     ];
