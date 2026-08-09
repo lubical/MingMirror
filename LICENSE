@@ -1,0 +1,74 @@
+明镜（MentalTutor）采用双许可证：代码与内容分别授权。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+第一部分：代码 — MIT 许可证
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+适用于以下"代码"部分：
+- cli/（Dart CLI 源码）
+- tests/（校验脚本）
+- tools/（预计算脚本等工具）
+
+MIT License
+
+Copyright (c) 2026 MentalTutor
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+第二部分：内容 — 知识共享 署名 4.0 国际 (CC BY 4.0)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+适用于以下"内容"部分：
+- prompts/（角色卡）
+- corpus/（九声部语料）
+- concepts/（概念条目）
+- methods/（方法步骤）
+- guides/（声部导读）
+- examples/（对话示例）
+- paperkit/（纸版工具包）
+- docs/（设计文档）
+
+您可以自由地：
+- 共享 — 在任何媒介以任何形式复制、发行本作品
+- 适配 — 修改、转换或以本作品为基础进行创作
+- 用于任何目的，包括商业用途（唯须遵守下述条件）
+
+惟须遵守以下条件：
+- 署名 — 您必须给出适当的署名，提供指向本许可证的链接，同时标明是否对原始作品作了修改。您可以用任何合理的方式来署名，但不得以任何方式暗示许可人为您或您的使用背书。
+
+完整的 CC BY 4.0 许可证文本见：
+https://creativecommons.org/licenses/by/4.0/legalcode.zh
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+边界与说明
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. 引用古籍原文（道德经、论语、六祖坛经、传习录、庄子、资本论、沉思录、
+   活出生命的意义等）属于公共领域，不受本许可证约束；本仓库仅对原文的
+   "白话解析"、组织方式、概念体系等享有版权。
+
+2. 设计文档（docs/）中的思想框架、诊断矩阵、方法论本身为事实/思想，
+   不受版权保护；其具体文字表述遵循 CC BY 4.0。
+
+3. 项目名称"明镜"、各思想声部的命名与组织方式属于项目的标识，建议他人
+   衍生时使用不同名称以避免混淆（非强制，属良好实践）。
+
+4. 免责：明镜不提供专业心理、医疗、法律、投资建议。详见各角色卡与工具
+   中的安全声明。本仓库内容仅供思想交流与自助审视，不构成任何专业服务。
