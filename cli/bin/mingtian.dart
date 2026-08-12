@@ -42,7 +42,7 @@ const String _kSafetyTemplate = '''
 听到这些，我很担心你此刻的安全。现在最重要的不是讲道理，是先确保你（或你担心的人）安全。
 
 请立即联系：
-· 心理援助热线 12356（全国统一，24 小时）
+· 心理援助热线 12356（全国统一，服务时段以当地接通为准）
 · 若正在发生即时危险或已自伤：拨打 110 / 120
 · 家暴/侵害场景：可拨打 12338（妇女维权热线）或 110
 
@@ -145,6 +145,12 @@ Future<void> main(List<String> args) async {
   final history = <Map<String, String>>[];
   var awaiting = false;
   var privacyAcknowledged = false;
+  var crisisMode = false; // v0.1.2：危机状态持久化——进入后持续安全模式，明确安全才恢复
+
+  // 危机退出信号：用户明确表示已安全/已求助时，退出危机模式
+  const crisisExitSignals = ['我没事了', '我安全了', '我已安全', '我打过电话了', '我联系了', '我好了', '已报警', '已联系'];
+  bool isCrisisExit(String text) =>
+      crisisExitSignals.any(text.contains) || text.contains(RegExp(r'12338|12356|110|120'));
 
   // 隐私同意（云端推理告知）：任何 LLM 调用前必须通过。
   // A6：管道/重定向输入（EOF）时 readLineSync 返回 null——此时视为非交互环境，放行（不再永久取消）。
@@ -221,11 +227,27 @@ Future<void> main(List<String> args) async {
     // 求助模式（默认）：诊断对话
     final userText = input.startsWith('/诊') ? input.substring(3).trim() : input;
 
-    // CLI 层确定性安全路由：危险信号命中 → 阻断哲学处方，输出固定安全模板
+    // CLI 层确定性安全路由（v0.1.2 持久危机模式）：
+    // - 本轮命中危险词 → 进入危机模式
+    // - 已在危机模式 → 持续安全模板，直到用户明确表示已安全/已求助
+    //   （防止"我不想活→模板；他现在在门外→哲学处方"的致命跳回）
     final dangerous = VectorSearch.isDangerous(userText);
     if (dangerous) {
+      crisisMode = true;
       stdout.writeln(_kSafetyTemplate);
       continue;
+    }
+    if (crisisMode) {
+      // 用户明确安全/已求助 → 退出危机模式，回普通流程
+      if (isCrisisExit(userText)) {
+        crisisMode = false;
+        stdout.writeln('（已退出危机模式。如果你之后又感到不安全，随时告诉我。）\n');
+        // 不 continue——继续本轮作为普通对话处理
+      } else {
+        // 仍在危机模式：持续安全响应，不恢复哲学处方
+        stdout.writeln(_kSafetyTemplate);
+        continue;
+      }
     }
 
     final hits = search.search(userText, topK: topK, safeMode: true);

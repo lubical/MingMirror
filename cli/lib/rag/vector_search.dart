@@ -43,23 +43,56 @@ class VectorSearch {
   ];
 
   /// 侵害/自伤类危险词：命中后走确定性安全路由（CLI 层阻断哲学处方）。
-  /// 注意：关键词匹配是兜底层，必然有漏网——未命中时仍由角色卡安全条款
-  /// （v0.8 人际安全评估前置 + 危机转介）兜底，双层防御。
-  static const List<String> kDangerWords = [
-    // 自伤/自杀（含隐含表达）——扩充自动词变体与意图短语
+  /// 危险词两层架构（v0.1.2 评审修复）：
+  /// 原单词表同时造成漏报（"我想离开这个世界"）和误报（"AI 威胁了我的工作""我跟踪基金"）。
+  /// 拆为两层：确定词单命中即拦截；模糊词需与危机上下文词共现才拦截。
+  ///
+  /// 仍是兜底层——未命中时由角色卡安全条款（v0.8 人际安全评估前置 + 危机转介）兜底，双层防御。
+
+  /// 第一层：确定危险词——单命中即拦截。
+  /// 这些词几乎不会在非危机语境出现（自伤动词、强侵害动词、明确意图短语）。
+  static const List<String> kSevereDangerWords = [
+    // 自伤/自杀：动词与明确意图
     '自杀', '自伤', '轻生', '不想活', '活不下去', '想消失', '不如结束', '结束这一切',
-    '了结', '一了百了', '伤害自己', '割腕', '跳楼', '吃安眠药', '撑不住', '撑不下去了', '受不了了',
-    '活着好累', '活着没意义', '活着没意思', '想走极端', '不想醒来', '睡过去再也不醒',
-    '从桥上', '跳下去', '了此一生', '了却此生', '解脱',
-    // 家暴/人身侵害（含隐含表达）——扩充动词变体
+    '了结', '一了百了', '伤害自己', '割腕', '跳楼', '吃安眠药',
+    '活着好累', '活着没意义', '活着没意思', '想走极端', '不想醒来', '不想再醒来',
+    '离开这个世界', '从桥上', '跳下去', '了此一生', '了却此生',
+    // 家暴/人身侵害：暴力动词（带"我"或"他打"等主体，几乎不会误伤）
     '家暴', '殴打', '扇我', '打我', '推我', '踢我', '踹我', '拽我', '扯我',
     '按在墙上', '掐我', '掐脖子', '他掐我', '揍我', '动手打',
-    '砸东西威胁', '威胁', '恐吓', '强迫我', '逼我',
-    '控制生活费', '经济控制', '不让我出门', '关着我', '锁起来', '限制自由',
-    '跟踪', '骚扰', '霸凌', '勒索', '侵害', '强奸', '猥亵', '性侵',
+    '强迫我', '控制生活费', '经济控制', '不让我出门', '关着我', '锁起来', '限制自由',
+    '强奸', '猥亵', '性侵',
     // 其他高危信号
     '幻觉', '幻听', '被害妄想',
   ];
+
+  /// 第二层：模糊危险词——需与"危机上下文词"共现才拦截。
+  /// 这些词本身在非危机语境常见（"AI 威胁工作""跟踪基金""撑不住项目"），单独命中易误伤。
+  static const List<String> kAmbiguousDangerWords = [
+    '威胁', '恐吓', '跟踪', '骚扰', '霸凌', '勒索', '侵害',
+    '撑不住', '撑不下去了', '受不了了', '解脱',
+  ];
+
+  /// 危机上下文词：与模糊词共现时，才认定危机。
+  /// 含自伤指向、侵害主体、绝望情绪等。
+  static const List<String> kCrisisContextWords = [
+    // 自伤/死亡指向
+    '不想活', '活着', '生命', '人生', '死', '了结', '消失', '崩溃', '绝望',
+    // 侵害主体（暗示真实人身威胁）
+    '他', '她', '老公', '老婆', '伴侣', '家人', '父亲', '母亲', '男友', '女友', '同事', '老板',
+    // 暴力/侵害场景
+    '打', '骂', '钱', '出门', '回家', '夜里', '害怕', '怕',
+  ];
+
+  /// 兼容旧接口：合并两层判定。
+  static bool isDangerous(String text) {
+    // 第一层：确定词单命中
+    if (kSevereDangerWords.any(text.contains)) return true;
+    // 第二层：模糊词 + 危机上下文词共现
+    final hasAmbiguous = kAmbiguousDangerWords.any(text.contains);
+    if (hasAmbiguous && kCrisisContextWords.any(text.contains)) return true;
+    return false;
+  }
 
   /// 治疗/就医信号词：命中后注入转介规则（medicalRule，强制先确认就医情况）。
   static const List<String> kMedicalKeywords = [
@@ -79,8 +112,7 @@ class VectorSearch {
   /// 判定文本是否为含糊表达（信息不足）。
   static bool isVague(String text) => kVagueKeywords.any(text.contains);
 
-  /// 判定文本是否命中危险信号（CLI 安全路由入口）。
-  static bool isDangerous(String text) => kDangerWords.any(text.contains);
+  // isDangerous 定义见上方两层架构（kSevereDangerWords + kAmbiguousDangerWords 共现）。
 
   VectorSearch(this.corpus);
 
@@ -126,14 +158,15 @@ class VectorSearch {
   List<SearchResult> search(String query, {int topK = 4, bool safeMode = true}) {
     final qBigrams = _bigrams(query);
     final classes = classify(query);
-    final dangerous = kDangerWords.any(query.contains);
+    final dangerous = isDangerous(query);
 
     final candidates = <CorpusEntry>[];
     for (final e in corpus.entries) {
+      // 安全过滤：query 危险时，剔除"禁用场景含确定危险词"的条目（用确定词表，避免误过滤）
       if (safeMode &&
           dangerous &&
-          e.forbids.any((f) => kDangerWords.any(f.contains))) {
-        continue; // 安全过滤：该条目的禁用场景命中危险词，不返回
+          e.forbids.any((f) => kSevereDangerWords.any(f.contains))) {
+        continue;
       }
       if (classes.isNotEmpty && !classes.any(e.applies.contains)) {
         continue; // 分类命中时，只保留适用该困境类型的条目
