@@ -138,9 +138,9 @@ Future<_Result> _runGroup(
     }
     return _Result(text, false);
   }
-  // 组 A：普通 LLM（基线）
+  // 组 A：普通 LLM（基线）——中性 user 消息，不注入明镜身份（R2-4 修复基线污染）
   if (group == 'A') {
-    final text = await _collect(llm, _groupASystem, input);
+    final text = await _collect(llm, _groupASystem, input, neutralUser: true);
     return _Result(text, false);
   }
   // 组 B：仅角色卡（无检索、无脆弱态规则注入——纯粘贴场景）
@@ -148,11 +148,14 @@ Future<_Result> _runGroup(
   return _Result(text, false);
 }
 
-Future<String> _collect(LlmClient llm, String system, String input) async {
+Future<String> _collect(LlmClient llm, String system, String input, {bool neutralUser = false}) async {
   final sb = StringBuffer();
+  final userContent = neutralUser
+      ? input  // A 组基线：纯用户输入，不包裹明镜身份
+      : PromptBuilder.user(input);  // B/C 组：走防注入包裹
   await for (final d in llm.chat([
     {'role': 'system', 'content': system},
-    {'role': 'user', 'content': PromptBuilder.user(input)},
+    {'role': 'user', 'content': userContent},
   ])) {
     sb.write(d);
   }

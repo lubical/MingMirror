@@ -144,6 +144,8 @@ Dart SDK 安装见 [`cli/README.md`](cli/README.md#环境)。
 - **代码**（cli/ tests/ tools/）：[MIT License](LICENSE)
 - **内容**（prompts/ corpus/ concepts/ methods/ guides/ examples/ paperkit/ docs/）：[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)（署名即可用，含商用）
 
+⚠️ **注意**：部分语料涉及对受版权保护现代作品（弗兰克尔、阿德勒等）核心概念的转述，不在 CC BY 授权范围内（标注为合理使用引用）。完整来源与版权状态见 [`NOTICE`](NOTICE)。
+
 详见 [`LICENSE`](LICENSE)。
 
 引用的古籍原文（道德经、论语、六祖坛经、资本论、沉思录等）属公共领域；本仓库仅对其白话解析、组织方式、概念体系享有版权。
