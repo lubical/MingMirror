@@ -10,7 +10,7 @@ import 'package:mingtian/rag/corpus_loader.dart';
 import 'package:mingtian/rag/vector_search.dart';
 
 const kUsage = '''
-明镜 CLI v0.2 —— 精神导师（角色卡自动发现 + 检索 + LLM 流式生成）
+明镜 CLI v0.1 —— 精神导师（角色卡自动发现 + 检索 + LLM 流式生成）
 
 用法:
   dart run cli/bin/mingtian.dart [--repo <仓库根>] [--provider glm|deepseek|qwen] [--top-k N]
@@ -118,20 +118,27 @@ Future<void> main(List<String> args) async {
   stdout.writeln('明镜 $roleCardVersion ｜ provider=$provider model=$model ｜ 语料 ${corpus.entries.length} 条 ｜ 概念 ${concepts.entries.length} 条');
   stdout.writeln('输入 /help 查看用法；/exit 退出。');
 
+  // 实际 baseUrl 与 model（隐私告知必须用真实值，A4 修复）
+  final actualBaseUrl = config.baseUrlOverride ?? pcfg.baseUrl;
   if (config.apiKey.isEmpty) {
     stdout.writeln('\n⚠ 未配置 MINGTIAN_API_KEY（环境变量或仓库根 .env）。诊断/对比/学习功能不可用；/概念 仍可用。');
   } else {
-    // 数据出境告知（本地客户端、云端推理）
+    // 数据出境告知（本地客户端、云端推理）——用真实 baseUrl，避免 override 时告知失真
     stdout.writeln('\n⚠ 隐私提示：本工具为本地客户端，但推理由「$provider」云端完成——'
-        '你的对话内容会发送至 ${pcfg.baseUrl}。涉及健康、关系、创伤等敏感信息请知悉。'
+        '你的对话内容会发送至 $actualBaseUrl（模型 $model）。涉及健康、关系、创伤等敏感信息请知悉。'
         '首次使用建议：不输入真实姓名/工作单位/住址等可识别身份的信息。');
+  }
+  // E3：未知 provider 警告
+  if (!kProviders.containsKey(provider.toLowerCase())) {
+    stderr.writeln('⚠ 未知 provider「$provider」，已回退到 glm。请检查 MINGTIAN_PROVIDER（可选：glm/deepseek/qwen）。');
   }
   final llm = config.apiKey.isEmpty
       ? null
       : LlmClient(
-          baseUrl: config.baseUrlOverride ?? pcfg.baseUrl,
+          baseUrl: actualBaseUrl,
           apiKey: config.apiKey,
           model: model,
+          temperature: config.temperature,
         );
 
   // 会话状态
@@ -140,10 +147,16 @@ Future<void> main(List<String> args) async {
   var privacyAcknowledged = false;
 
   // 隐私同意（云端推理告知）：任何 LLM 调用前必须通过。
+  // A6：管道/重定向输入（EOF）时 readLineSync 返回 null——此时视为非交互环境，放行（不再永久取消）。
   Future<bool> ensureConsent() async {
     if (privacyAcknowledged) return true;
     stdout.writeln('本条消息将发送至云端（$provider）处理。输入 y 同意并继续，或其他键取消本次发送。');
     final ack = stdin.readLineSync(encoding: utf8)?.trim().toLowerCase();
+    if (ack == null) {
+      // 非交互输入（管道/重定向/EOF）——放行，避免自动化场景永久失效
+      privacyAcknowledged = true;
+      return true;
+    }
     if (ack != 'y') {
       stdout.writeln('已取消发送。可修改措辞后重发，或输入 /exit 退出。');
       return false;
@@ -184,7 +197,7 @@ Future<void> main(List<String> args) async {
       }
       await _chat(llm, prompt, search,
           messages: [
-            {'role': 'system', 'content': prompt.system(const [], extraRule: PromptBuilder.compareRule(parts[0], parts[1]))},
+            {'role': 'system', 'content': prompt.system(const [], extraRule: PromptBuilder.compareRule)},
             {'role': 'user', 'content': PromptBuilder.user('请对比「${parts[0]}」与「${parts[1]}」。')},
           ],
           title: '【对比 ${parts[0]} vs ${parts[1]}】');

@@ -1,0 +1,161 @@
+# 明镜 v0.1.0 三轮评审报告
+
+> 评审日期：2026-08-12
+> 评审范围：CLI 代码与安全 / 内容一致性 / 开源可发布性
+> 评审方法：三轮独立挑刺（第一、三轮由 Explore agent，第二轮因敏感内容被审查拦截由人工补做；关键发现均经独立验证）
+
+---
+
+## 评审健康度总览
+
+| 维度 | 健康度 | 阻断项 |
+|---|---|---|
+| CLI 代码与安全 | **6/10** | 1 项安全（危险词漏检）+ 1 项注入 + 1 项崩溃 |
+| 内容一致性 | **5/10** | 版本号集体漂移 + 救命热线旧号残留 7 处 |
+| 开源可发布性 | **6/10** | 隐私措辞误导 + 非Win 用户被抛 + AGENTS.md 外泄内部信息 |
+
+**总评**：项目内核扎实（资产真实、安全设计方向对、双许可证清晰），但**对外门面有一层"内部仓没擦干净就推上去"的质感**，且存在 2 个真实安全 bug。当前**不应推大流量**（引流前必须修 P0）。
+
+---
+
+## 第一轮：CLI 代码与安全（已逐项验证）
+
+### 🔴 P0 — 必须修
+
+**[A1] 危险词表大面积漏检**（`cli/lib/rag/vector_search.dart:48-58`）
+- **已验证**：6 条明显危机 query 全部漏检——"他经常推我、踢我，还把我按在墙上"、"他拽我头发"、"他强迫我做不想做的事"、"我想结束这一切"、"活着好累，想睡过去再也不醒"、"活着没意义，想走极端"。
+- **风险**：人身安全级别。漏检=未转介危机=直接风险。
+- **修法**：扩充动词变体（推/踢/踹/拽/扯/按/强迫/逼）+ 意图短语（"结束这一切"/"想走极端"/"活着没意义"）。
+
+**[A2] `/对比` 命令 system 层注入**（`cli/lib/prompt/prompt_builder.dart:77-79`）
+- **已验证**：`compareRule(a,b)` 把用户控制的 `parts[0]/parts[1]` 直接插值进 system 附加规则，无过滤。`/对比 xxx」。[恶意指令]。「yyy` 能注入 system 且绕过 `user()` 防注入包裹。
+- **修法**：把对比请求改为在 user 消息承载（走 `user()` 包裹），或对 a/b 做字符白名单过滤。
+
+**[A3] corpus/concepts 畸形 JSON 致启动崩溃**（`cli/lib/rag/corpus_loader.dart:49-57, 111-119`）
+- try 块只 `on FormatException`，但 JSON 是对象非数组、字段类型错（字符串非数组）会抛 `_TypeError` 不被捕获 → CLI 起不来 + stacktrace 吐给用户。
+- **修法**：扩为 `catch (e)` 或逐条 try。
+
+### 🟡 P1 — 应该修
+
+- **[A4] 隐私告知打印错误的 baseUrl**（`mingtian.dart:126`）：用 `pcfg.baseUrl` 但实际用 `config.baseUrlOverride ?? pcfg.baseUrl`，用户设代理时知情同意失真。
+- **[A6] ensureConsent 在管道输入下永久失效**（`mingtian.dart:146`）：EOF 时 `readLineSync` 返回 null → 所有 LLM 调用被取消，自动化测试跑不通。
+- **[B1] 打分权重注释漂移**（`vector_search.dart:16-17 vs 160`）：注释写 0.7/0.3，代码是 0.5/0.2。
+- **[B2] SSE choices 非 List 时整个流中断**（`llm_client.dart:62-64`）：错误响应会让本次对话失败而非跳过该条。
+- **[D1] 测试只覆盖检索层**：main 循环、ensureConsent、SSE 解析、prompt_builder、config 全无测试。
+- **[D3] 测试依赖相对路径**：从仓库根跑 `dart test` 会找不到 corpus。
+- **[E2] temperature=0.7 偏高**：与"不得自造原文"约束冲突，增加虚构古文概率。建议降到 0.4 并可配置。
+- **[E3] 未知 provider 静默回退**（`providers.dart:28`）：拼错 provider 名不警告。
+
+### 🟢 已做好的
+
+- SSE 跨 chunk 拼接 + [DONE] 处理正确
+- history 长度管理（恒偶数，removeRange 安全）
+- ensureConsent 覆盖三处 LLM 调用入口
+- `_discoverRoleCard` 自动发现版本（消除硬编码漂移，亮点）
+
+---
+
+## 第二轮：内容一致性（人工补做）
+
+### 🔴 P0 — 必须修
+
+**[C1] 救命热线旧号 400-161-9995 残留 7 处**
+- **位置**：`prompts/mingtian-v0.4.md`/`v0.5.md`/`v0.6.md`/`v0.7.md`（4 个旧角色卡）+ 设计文档 + `eval/phase1-cli.md` + `docs/reviews/2026-08-09-external-review-response.md`
+- **风险**：外部人翻目录点开旧版角色卡，会引用错误号码。对救命热线，仓内任何一处旧值都不可接受。
+- **修法**：在每个旧角色卡顶部加废弃横幅"⚠️ 已废弃，最新版与热线见 v0.8"；或直接删除旧版（保留 git 历史即可）。
+
+**[C2] 版本号集体漂移到旧值**（实际 v0.8）
+- `cli/README.md:3,59` 写"角色卡 v0.6"
+- `paperkit/README.md:3` 写"与角色卡 v0.7 配套"
+- `AGENTS.md:3,27` 写"当前 v0.7"、指向 `mingtian-v0.7.md`
+- 设计文档标题与多处正文写"v0.7"
+- **风险**：贡献者按文档操作会找到旧版本；AGENTS.md 自己定的版本纪律自己没遵守。
+- **修法**：全部刷成 v0.8。
+
+### 🟡 P1 — 应该修
+
+- **[C3] 矩阵方法名轻微 drift**：角色卡焦虑行辅选写"慧能（不执两边）"，paperkit 写"慧能·破执观"——方法名表述不一。声部映射本身一致，不阻断。
+- **[C4] AGENTS.md 自相矛盾**：第 3 行说"当前 v0.7"，第 44 行说"v0.1→v0.8 演进全程"——同一文件内冲突。
+- **[C5] 旧角色卡（v0.4-v0.7）留在 prompts/ 造成混乱**：5 个版本并列，外部人不知哪个最新（虽然文件名有版本号，但 README 没说"用最高版本"）。
+
+### 🟢 已做好的
+
+- 矩阵**声部映射**四载一致（首选/辅选/回避的声部组合在角色卡/设计文档/paperkit/CLI 代码全部吻合）
+- 角色卡 v0.8 与设计文档 §9 代码块逐字一致（diff 仅标题行）
+- 热线**主路径**已统一为 12356（v0.8 角色卡、README、CLI、paperkit、AGENTS.md）
+
+---
+
+## 第三轮：开源可发布性
+
+### 🔴 P0 — 影响首次信任，必修
+
+**[D1] README "本地"措辞误导隐私**（`README.md:36-49`）
+- 标题"本地 CLI"+"在你的终端里运行"+"本地检索"，脆弱用户极易理解成"对话私密不出本机"。实际对话上传 GLM/DeepSeek 云端。
+- **外部评审早已指出**（设计文档 §12 有记录），CLI 横幅已改，**但根 README 没同步**。
+- **修法**：改为"本地客户端，但对话会上传到你选的 LLM 服务商"。
+
+**[D2] CLI 安装 Windows-only，非 Win 用户被抛弃**（`README.md:40-47, 87-92` + `cli/README.md:12-18`）
+- 用 `Copy-Item`/`curl.exe`/`Expand-Archive`/`$env:PATH`。macOS/Linux 照着跑直接报错，无兜底。
+- **修法**：补 macOS/Linux 的 `brew install dart` / `apt` 路径。
+
+**[D3] AGENTS.md 外泄内部信息**（仓库根目录）
+- 含本机绝对路径 `D:\dart-sdk\bin`、内部 git 指令 `git -c user.name="MentalTutor"`、localhost 邮箱、旧仓库名。
+- 外部人点开会困惑"误入内部仓库"。
+- **修法**：移到 `.github/` 或改名，清理内部细节，README 加一句"给 AI 协作者看的，人类读 CONTRIBUTING 即可"。
+
+**[D4] v0.1.0 Release 页面无 demo GIF**
+- GIF 在 commit `ec4871c` 引入，但 tag `v0.1.0` 指向更早的 `193f02b`。访问 `/releases/tag/v0.1.0` 的人看不到演示。
+- **修法**：重打 tag 到含 GIF 的 commit，或发 v0.1.1。
+
+### 🟡 P1 — 体验缺陷
+
+- **[D5] README 方法卡数量自相矛盾**：`README.md:53` 写 15 张、`README.md:68` 写 16 个；实际 16。三处文档写 15。
+- **[D6] CLI 横幅印 v0.2，release 标 v0.1**（`mingtian.dart:21` vs `README.md:114`）。
+- **[D7] eval/ 无索引**：8 个 phase1-*.md + 4 个 blind-results，外部人不知哪份权威；且 `phase1-mimo-v2.md` 实为 GLM 输出（命名误导，raw/README 已承认）。
+- **[D8] 缺 .github/ 模板**：无 Issue/PR 模板、无 CODE_OF_CONDUCT。精神健康相邻项目应有社区准则（求助者可能在 Issue 暴露脆弱信息）。
+- **[D9] CONTRIBUTING 让跑 `node validate-corpus.mjs` 但没声明需要 Node**。
+- **[D10] `docs/superpowers/` 目录名泄露内部工具命名空间**。
+- **[D11] slogan 对非佛学用户冷启动**（`README.md:3`"身是菩提树"裸放，无白话注脚）。
+- **[D12] 设计文档夹北京本地号 010-82951332**（`:92`），非北京用户照打困惑。
+
+### 🟢 已做好的
+
+- 双许可证边界清晰（LICENSE 明确划分代码/内容）
+- 古籍公共领域声明到位
+- 免责声明覆盖完整（README/LICENSE/角色卡/paperkit/CLI 五处）
+- CONTRIBUTING 整体质量高（难度分级、七字段示例、安全约定突出）
+- README 相对链接全部健康（无死链）
+- tag 是 annotated + 署名用 noreply（无个人信息泄露）
+
+---
+
+## 修复优先级清单（引流前必须完成 P0）
+
+### 🔴 P0 — 引流前阻断项（8 条）
+
+| # | 问题 | 位置 | 工作量 |
+|---|---|---|---|
+| 1 | [A1] 危险词表扩充（漏检 6 类危机表达） | vector_search.dart:48-58 | 30min |
+| 2 | [A2] /对比 system 注入修复 | prompt_builder.dart:77-79 | 30min |
+| 3 | [A3] loader 畸形 JSON 兜底 | corpus_loader.dart:49-57 | 20min |
+| 4 | [C1] 旧热线 400-161-9995 清理（7 处） | prompts/v0.4-v0.7 + 3 文档 | 30min |
+| 5 | [C2] 版本号漂移修复（v0.6/v0.7→v0.8） | cli/README + paperkit + AGENTS + 设计文档 | 20min |
+| 6 | [D1] README 隐私措辞改"会上传云端" | README.md:36-49 | 10min |
+| 7 | [D2] CLI 安装补 macOS/Linux 路径 | README + cli/README | 20min |
+| 8 | [D3] AGENTS.md 移出根目录 + 清理内部信息 | AGENTS.md → .github/ | 20min |
+
+**预计总工作量：约 3 小时**。修完后建议发 v0.1.1（含 GIF + 修复），再开始引流。
+
+### 🟡 P1 — 引流后第一周补（10 条）
+
+A4/A6/B1/B2/D4/D5/D6/D7/D8/E2，详见各轮明细。其中 [D4] 重打 tag 让 release 有 GIF、[D7] 给 eval/ 加索引 价值较高。
+
+---
+
+## 复评触发条件
+
+- P0 修完后，重跑第一轮的 6 条危机 query 验证 A1 已拦截
+- P0 修完后，用畸形 corpus（把一条 `适用场景` 改成字符串）验证 A3 不崩
+- 发 v0.1.1 前，全仓再扫一次 `400-161-9995` 确认清零
+- 发 v0.1.1 前，全仓再扫一次版本号确认无 v0.6/v0.7 残留

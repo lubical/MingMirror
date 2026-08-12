@@ -1,6 +1,6 @@
 # 明镜 CLI
 
-本地命令行版"明镜"——精神导师（角色卡 v0.6 + 语料检索 + LLM 生成）。
+本地命令行版"明镜"——精神导师（角色卡 v0.8 + 语料检索 + LLM 生成）。
 验证"角色卡 + RAG 检索 + LLM 流式生成"整套架构；Dart 代码可复用于 Flutter App。
 
 ## 环境
@@ -56,7 +56,7 @@ bin/mingtian.dart        入口：交互循环、命令路由、追问状态机�
 lib/config.dart          .env/环境变量配置（key 只读不落盘）
 lib/llm/                 dio + 手写 SSE；glm/deepseek/qwen 三 provider
 lib/rag/                 corpus/concepts 加载 + 检索
-lib/prompt/              角色卡 v0.6 + RAG 语料注入 + 追问/对比/学习规则
+lib/prompt/              角色卡 v0.8 + RAG 语料注入 + 追问/对比/学习规则
 tools/precompute_vectors.py  可选：语料向量预计算（保留接口，MVP 默认不用）
 ```
 

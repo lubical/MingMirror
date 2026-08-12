@@ -8,11 +8,13 @@ class LlmClient {
   final String baseUrl;
   final String apiKey;
   final String model;
+  final double temperature;
 
   LlmClient({
     required this.baseUrl,
     required this.apiKey,
     required this.model,
+    this.temperature = 0.4, // E2：从 0.7 降到 0.4，与"不得自造原文"约束对齐，降低虚构引文概率
   }) : _dio = Dio(BaseOptions(
           baseUrl: baseUrl,
           connectTimeout: const Duration(seconds: 20),
@@ -35,7 +37,7 @@ class LlmClient {
         'model': model,
         'messages': messages,
         'stream': true,
-        'temperature': 0.7,
+        'temperature': temperature,
       },
     );
 
@@ -60,9 +62,15 @@ class LlmClient {
           if (data == '[DONE]') return;
           try {
             final json = jsonDecode(data) as Map<String, dynamic>;
-            final delta =
-                (json['choices'] as List?)?.firstOrNull?['delta']?['content'];
-            if (delta is String && delta.isNotEmpty) yield delta;
+            // B2：choices 可能非 List、元素可能非 Map（错误响应体），逐层安全取值
+            final choices = json['choices'];
+            if (choices is! List || choices.isEmpty) continue;
+            final first = choices.first;
+            if (first is! Map) continue;
+            final delta = first['delta'];
+            if (delta is! Map) continue;
+            final content = delta['content'];
+            if (content is String && content.isNotEmpty) yield content;
           } on FormatException {
             // 忽略无法解析的单条 SSE 数据
           }

@@ -1,6 +1,8 @@
 # AGENTS.md — MingMirror（明镜）
 
-**明镜**：熔炼儒道佛 + 毛泽东 + 资本论等九声部的"精神导师"AI。三个载体：角色卡粘贴（`prompts/`）、本地 CLI（`cli/`，Dart）、纸版工具包（`paperkit/`）。设计权威源：`docs/superpowers/specs/2026-08-07-spiritual-mentor-design.md`（当前 v0.7）。
+> 本文件是给 **AI 协作者（coding agent）** 看的项目协议。人类贡献者请读 [`CONTRIBUTING.md`](../CONTRIBUTING.md) 即可。
+
+**明镜**：熔炼儒道佛 + 毛泽东 + 资本论等九声部的"精神导师"AI。三个载体：角色卡粘贴（`prompts/`）、本地 CLI（`cli/`，Dart）、纸版工具包（`paperkit/`）。设计权威源：`docs/superpowers/specs/2026-08-07-spiritual-mentor-design.md`（当前 v0.8）。
 
 ## Commands
 
@@ -11,12 +13,12 @@ node tests/validate-corpus.mjs corpus concepts
 # CLI 静态检查 + 单元测试（改 cli/ 后必跑）
 cd cli; dart analyze; dart test
 
-# 运行 CLI（需 .env 配 MINGTIAN_API_KEY；dart 在 D:\dart-sdk\bin，若不在 PATH 先执行 $env:PATH = "D:\dart-sdk\bin;$env:PATH"）
+# 运行 CLI（需 .env 配 MINGTIAN_API_KEY）
 # 启动会提示云端推理（隐私告知），首次发送消息需输入 y 同意；角色卡版本自动发现 prompts/ 最高版本
 dart run cli/bin/mingtian.dart
 
-# git 提交（仓库 git 用户统一用 MentalTutor；Windows PowerShell 下避免 heredoc 链式命令）
-git -c user.name="MentalTutor" -c user.email="mentor@localhost" commit -m "..."
+# git 提交
+git commit -m "..."
 ```
 
 ## Architecture
@@ -24,7 +26,7 @@ git -c user.name="MentalTutor" -c user.email="mentor@localhost" commit -m "..."
 | 模块 | 角色 |
 |---|---|
 | `docs/superpowers/specs/2026-08-07-spiritual-mentor-design.md` | **设计权威源**：角色卡 §9、解药矩阵 §4、资产规范 §8、实测修订记录 §12 |
-| `prompts/mingtian-v0.7.md` | 角色卡（粘贴进任意 LLM 用）——**必须与设计文档 §9 diff 一致** |
+| `prompts/mingtian-v0.8.md` | 角色卡（粘贴进任意 LLM 用）——**必须与设计文档 §9 diff 一致** |
 | `corpus/` `concepts/` `methods/` `guides/` `examples/` | 知识资产四层+示例：358 金句 / 87 概念 / 16 方法 / 10 导读 / 6 示例 |
 | `paperkit/` | 纸版工具包（无 AI 自助审视，含第 0 步安全筛查） |
 | `cli/` | Dart CLI：`bin/mingtian.dart`（入口/追问状态机/命令路由）、`lib/llm`（dio+SSE，glm/deepseek/qwen）、`lib/rag`（分类+n-gram+矩阵声部加成检索+危险词过滤）、`lib/prompt`（角色卡+RAG 注入+fragileRule/追问规则） |

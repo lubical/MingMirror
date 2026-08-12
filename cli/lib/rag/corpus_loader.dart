@@ -51,8 +51,10 @@ class Corpus {
         for (final e in arr) {
           list.add(CorpusEntry.fromJson(e as Map<String, dynamic>));
         }
-      } on FormatException {
-        stderr.writeln('警告: 忽略无法解析的语料文件 ${f.path}');
+      } catch (e) {
+        // A3 修复：FormatException 只覆盖 JSON 语法错；类型错（非数组、字段类型不符）
+        // 抛 TypeError/_TypeError，原代码不捕获会致启动崩溃。改为全捕获，跳过该文件。
+        stderr.writeln('警告: 忽略无法解析的语料文件 ${f.path}（$e）');
       }
     }
     return Corpus(list);
@@ -113,8 +115,8 @@ class Concepts {
         for (final e in arr) {
           list.add(ConceptEntry.fromJson(e as Map<String, dynamic>));
         }
-      } on FormatException {
-        stderr.writeln('警告: 忽略无法解析的概念文件 ${f.path}');
+      } catch (e) {
+        stderr.writeln('警告: 忽略无法解析的概念文件 ${f.path}（$e）');
       }
     }
     return Concepts(list);

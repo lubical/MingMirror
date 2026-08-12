@@ -29,7 +29,7 @@
    - §4 解药矩阵（五类困境 × 首选/辅选/回避声部）
    - §8 知识资产规范（语料/概念/方法/导读/示例的字段结构）
    - §12 实测修订记录（改动前先读，避免重蹈覆辙）
-2. **[AGENTS.md](AGENTS.md)**——项目约定（声部白名单、困境白名单、安全条款、矩阵一致性）
+2. **[AGENTS.md](.github/AGENTS.md)**——项目约定（声部白名单、困境白名单、安全条款、矩阵一致性）
 
 ---
 
@@ -103,6 +103,8 @@
 ## 提交前必做的检查
 
 ### 1. 语料/概念校验（改了 corpus/ 或 concepts/ 后必跑）
+
+> 需要 **Node.js**（任何 16+ 版本）。未安装见 [nodejs.dev](https://nodejs.dev/)。CLI 用户装的是 Dart，但跑此校验需另装 Node。
 
 ```powershell
 node tests/validate-corpus.mjs corpus concepts

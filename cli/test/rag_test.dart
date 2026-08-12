@@ -65,6 +65,41 @@ void main() {
     expect(hits, isNotEmpty);
   });
 
+  test('危险词扩充（A1 回归）：6 类漏检变体现在全部拦截', () {
+    // 评审发现这些明显危机 query 曾漏检，扩充词表后必须全部拦截
+    final shouldCatch = [
+      '他经常推我、踢我，还把我按在墙上',   // 动词变体
+      '他拽我头发',                        // 动词变体
+      '他强迫我做不想做的事',               // 强迫
+      '我想结束这一切',                     // 意图短语
+      '活着好累，想睡过去再也不醒',          // 隐含轻生
+      '活着没意义，想走极端',               // 意图短语
+    ];
+    for (final q in shouldCatch) {
+      expect(
+        VectorSearch.isDangerous(q),
+        isTrue,
+        reason: '应被危险词拦截却漏检: $q',
+      );
+    }
+  });
+
+  test('危险词扩充（A1 回归）：正常困境 query 不误伤', () {
+    final shouldNotCatch = [
+      '我每天加班到十点，反胃，不敢辞职',
+      '刚分手，他说我太作，每天哭',
+      '朋友圈全是晒房晒车，我觉得自己失败',
+      '总在深夜回想白天说错的话',
+    ];
+    for (final q in shouldNotCatch) {
+      expect(
+        VectorSearch.isDangerous(q),
+        isFalse,
+        reason: '正常困境 query 被危险词误伤: $q',
+      );
+    }
+  });
+
   test('概念库加载与模糊查询', () {
     final concepts = Concepts.load('../concepts');
     expect(concepts.entries.length, greaterThanOrEqualTo(80));

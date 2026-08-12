@@ -2,6 +2,7 @@
 
 > 身是菩提树，心如明镜台——一位熔炼东西方智慧的**精神导师 AI**。
 > 她不直接给答案，而是帮你照见自己。
+> （名号取自神秀偈，意为：心如明镜，照见真实的自己——而非给你一个外部答案）
 
 ![明镜对话演示](docs/screenshots/demo-chat.gif)
 
@@ -37,6 +38,8 @@
 
 明镜的 CLI 客户端在你的终端里运行，自带**九声部语料库的本地检索**（358 条金句 + 87 个概念 + 16 个方法），引用原文更准确，且支持 `/概念` `/对比` `/学习` 命令。
 
+> ⚠️ **隐私须知**：CLI 是本地客户端（语料检索不出本机），但**对话生成由你选的 LLM 服务商云端完成**——你的对话内容会上传至 GLM / DeepSeek / 通义。涉及健康、关系、创伤等敏感信息请知悉，建议不输入真实姓名/工作单位/住址。
+
 ```powershell
 # 配置（仓库根目录）
 Copy-Item .env.example .env
@@ -46,11 +49,16 @@ Copy-Item .env.example .env
 dart run cli/bin/mingtian.dart
 ```
 
+**Dart SDK 安装**：
+- macOS：`brew install --cask dart`（或见 [dart.dev/get-dart](https://dart.dev/get-dart)）
+- Linux：`apt install dart`（Debian/Ubuntu）或见 [dart.dev/get-dart](https://dart.dev/get-dart)
+- Windows：见 [`cli/README.md`](cli/README.md) 的绿色版安装步骤
+
 详见 [`cli/README.md`](cli/README.md)。CLI 代码（Dart）未来可复用到移动 App。
 
 ### 3. 纸版工具包（无 AI、无网络）
 
-不想用 AI？明镜的诊断框架也物化成了可打印的自助审视工具：诊断矩阵速查卡、15 张方法卡、金句卡。翻开 → 识别困境 → 选方法 → 照步骤做。
+不想用 AI？明镜的诊断框架也物化成了可打印的自助审视工具：诊断矩阵速查卡、16 张方法卡、金句卡。翻开 → 识别困境 → 选方法 → 照步骤做。
 
 详见 [`paperkit/README.md`](paperkit/README.md)。
 

@@ -9,6 +9,7 @@ class Config {
   final String? baseUrlOverride;
   final int topK;
   final int history;
+  final double temperature;
 
   Config({
     required this.apiKey,
@@ -17,6 +18,7 @@ class Config {
     this.baseUrlOverride,
     required this.topK,
     required this.history,
+    required this.temperature,
   });
 
   /// 极简 .env 解析：KEY=VALUE 行，忽略注释与空行。
@@ -51,6 +53,7 @@ class Config {
       baseUrlOverride: baseUrl.isEmpty ? null : baseUrl,
       topK: intOr('MINGTIAN_TOP_K', 4),
       history: intOr('MINGTIAN_HISTORY', 6),
+      temperature: double.tryParse(_get('MINGTIAN_TEMPERATURE', dotEnv, '')) ?? 0.4,
     );
   }
 }
