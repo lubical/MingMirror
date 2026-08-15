@@ -159,16 +159,22 @@ Future<_Result> _runOne(LlmClient llm, PromptBuilder prompt,
 
 Future<String> _collect(LlmClient llm, String system, String input,
     {bool neutralUser = false}) async {
-  final sb = StringBuffer();
   final userContent =
       neutralUser ? input : PromptBuilder.user(input);
-  await for (final d in llm.chat([
+  final messages = [
     {'role': 'system', 'content': system},
     {'role': 'user', 'content': userContent},
-  ])) {
-    sb.write(d);
+  ];
+  // 空输出重试一次（108 轮实测偶发率 1/108，重试后残余概率 ~1e-4）
+  for (var attempt = 1; attempt <= 2; attempt++) {
+    final sb = StringBuffer();
+    await for (final d in llm.chat(messages)) {
+      sb.write(d);
+    }
+    if (sb.toString().trim().isNotEmpty) return sb.toString();
+    if (attempt == 1) stdout.write('(空输出，重试) ');
   }
-  return sb.toString();
+  return '';
 }
 
 String _discoverRoleCard(String promptsDir) {

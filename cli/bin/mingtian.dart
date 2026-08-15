@@ -305,6 +305,7 @@ Future<void> main(List<String> args) async {
 }
 
 /// 执行一次流式对话，返回完整回复；失败返回 null 并打印错误。
+/// 空输出（LLM 偶发空流，实测约 1/108）自动重试一次。
 Future<String?> _chat(
   LlmClient llm,
   PromptBuilder prompt,
@@ -313,18 +314,29 @@ Future<String?> _chat(
   required String title,
 }) async {
   stdout.writeln('\n$title：');
-  final sb = StringBuffer();
-  try {
-    await for (final delta in llm.chat(messages)) {
-      sb.write(delta);
-      stdout.write(delta);
+  for (var attempt = 1; attempt <= 2; attempt++) {
+    final sb = StringBuffer();
+    try {
+      await for (final delta in llm.chat(messages)) {
+        sb.write(delta);
+        stdout.write(delta);
+      }
+      if (sb.toString().trim().isNotEmpty) {
+        stdout.writeln();
+        return sb.toString();
+      }
+      if (attempt == 1) {
+        stdout.writeln('（收到空回复，重试一次…）');
+        continue;
+      }
+      stderr.writeln('\n⚠ 连续两次空回复，请稍后重试。');
+      return null;
+    } catch (e) {
+      stderr.writeln('\n⚠ LLM 调用失败: $e');
+      return null;
     }
-    stdout.writeln();
-    return sb.toString();
-  } catch (e) {
-    stderr.writeln('\n⚠ LLM 调用失败: $e');
-    return null;
   }
+  return null;
 }
 
 /// /概念：本地概念查询（不调 LLM）。
