@@ -231,12 +231,14 @@ Future<void> main(List<String> args) async {
     // - 本轮命中危险词 → 进入危机模式
     // - 已在危机模式 → 持续安全模板，直到用户明确表示已安全/已求助
     //   （防止"我不想活→模板；他现在在门外→哲学处方"的致命跳回）
-    final dangerous = VectorSearch.isDangerous(userText);
-    if (dangerous) {
+    // v0.1.3 三态路由：danger 阻断；negated（"没有自杀想法"类否定）降级为正常对话+安全备注
+    final danger = VectorSearch.dangerLevel(userText);
+    if (danger == DangerLevel.danger) {
       crisisMode = true;
       stdout.writeln(_kSafetyTemplate);
       continue;
     }
+    final negated = danger == DangerLevel.negated;
     if (crisisMode) {
       // 用户明确安全/已求助 → 退出危机模式，回普通流程
       if (isCrisisExit(userText)) {
@@ -267,6 +269,7 @@ Future<void> main(List<String> args) async {
     final vague = VectorSearch.isVague(userText);
     final rules = <String>[
       if (awaiting) PromptBuilder.awaitingRule,
+      if (negated) PromptBuilder.negatedRule, // v0.1.3：否定降级——正常对话+温和安全备注
       if (fragile) PromptBuilder.fragileRule,
       if (medical) PromptBuilder.medicalRule,
       if (vague) PromptBuilder.vagueRule,

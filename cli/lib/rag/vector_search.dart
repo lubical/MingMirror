@@ -7,6 +7,11 @@ class SearchResult {
   SearchResult(this.entry, this.score);
 }
 
+/// 危险等级三态（v0.1.3）。
+/// none：无信号；negated：危险词全被否定（"我没有自杀想法"）——降级不阻断；
+/// danger：真危机——阻断哲学处方。
+enum DangerLevel { none, negated, danger }
+
 /// 检索器（MVP 零依赖实现）。
 ///
 /// 设计说明：预计算 embedding 只覆盖 corpus 侧，query 的 embedding 在
@@ -84,15 +89,53 @@ class VectorSearch {
     '打', '骂', '钱', '出门', '回家', '夜里', '害怕', '怕',
   ];
 
-  /// 兼容旧接口：合并两层判定。
-  static bool isDangerous(String text) {
-    // 第一层：确定词单命中
-    if (kSevereDangerWords.any(text.contains)) return true;
-    // 第二层：模糊词 + 危机上下文词共现
+  /// 否定词：出现在确定危险词**前方近距离**时，该危险词被否定（如"没有自杀想法"）。
+  /// 注意：不含单独的"不"——"不想活"本身是危机表达，不能用"不"放行。
+  static const List<String> kNegationWords = [
+    '没有', '从未', '并无', '并不是', '并非', '不曾', '无',
+  ];
+
+  /// 危险等级三态（v0.1.3 否定句降级）。
+  /// [DangerLevel.none] 无信号；[DangerLevel.negated] 危险词全部被否定
+  /// （如"我没有自杀想法"）——不阻断，正常对话但注入安全备注规则；
+  /// [DangerLevel.danger] 真危机——阻断哲学处方，走安全模板。
+  static DangerLevel dangerLevel(String text) {
+    // 第一层：确定词。区分"被否定的"与"真实的"
+    final severeHits = kSevereDangerWords.where(text.contains).toList();
+    if (severeHits.isNotEmpty) {
+      final anyReal = severeHits.any((w) => !_isNegated(text, w));
+      if (anyReal) return DangerLevel.danger;
+      // 所有确定词都被否定 → 继续查模糊层；若模糊层也无 → negated
+      final hasAmbiguous = kAmbiguousDangerWords.any(text.contains);
+      if (hasAmbiguous && kCrisisContextWords.any(text.contains)) {
+        return DangerLevel.danger;
+      }
+      return DangerLevel.negated;
+    }
+    // 第二层：模糊词 + 上下文共现
     final hasAmbiguous = kAmbiguousDangerWords.any(text.contains);
-    if (hasAmbiguous && kCrisisContextWords.any(text.contains)) return true;
+    if (hasAmbiguous && kCrisisContextWords.any(text.contains)) {
+      return DangerLevel.danger;
+    }
+    return DangerLevel.none;
+  }
+
+  /// 判断危险词 word 在 text 中的出现是否紧跟否定词（前方 ≤3 字符内）。
+  static bool _isNegated(String text, String word) {
+    var idx = text.indexOf(word);
+    while (idx >= 0) {
+      // 检查该出现位置前方 1-3 字符窗口是否含否定词
+      final start = idx - 3 >= 0 ? idx - 3 : 0;
+      final prefix = text.substring(start, idx);
+      if (kNegationWords.any(prefix.contains)) return true;
+      idx = text.indexOf(word, idx + 1);
+    }
     return false;
   }
+
+  /// 兼容旧接口：danger 级别才返回 true（negated 不算 dangerous）。
+  static bool isDangerous(String text) => dangerLevel(text) == DangerLevel.danger;
+
 
   /// 治疗/就医信号词：命中后注入转介规则（medicalRule，强制先确认就医情况）。
   static const List<String> kMedicalKeywords = [

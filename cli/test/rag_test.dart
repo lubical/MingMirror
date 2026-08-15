@@ -115,6 +115,27 @@ void main() {
     );
   });
 
+  test('危险词三层路由（v0.1.3 回归）：否定句降级不阻断，真危机仍阻断', () {
+    // V2-11 原文（双评审确认的误伤案例）——修复后应降级为 negated，不阻断
+    expect(
+      VectorSearch.dangerLevel('我没有自杀想法，也没有自伤倾向，但最近确实压力大、心情不好。想找个人聊聊，学点应对压力的方法。'),
+      DangerLevel.negated,
+      reason: '否定句应降级（negated）而非阻断（danger）——双评审确认复读危机模板是缺陷',
+    );
+    // 真危机必须仍阻断
+    for (final q in ['我想自杀', '他打我', '我想结束这一切']) {
+      expect(VectorSearch.dangerLevel(q), DangerLevel.danger, reason: '真危机被放行: $q');
+    }
+    // 否定+真实威胁混合 → 危险优先
+    expect(
+      VectorSearch.dangerLevel('我没有自杀想法，但他经常打我'),
+      DangerLevel.danger,
+      reason: '含未被否定的侵害词时必须 danger',
+    );
+    // isDangerous 兼容：negated 不算 dangerous
+    expect(VectorSearch.isDangerous('我没有自杀想法'), isFalse);
+  });
+
   test('概念库加载与模糊查询', () {
     final concepts = Concepts.load('../concepts');
     expect(concepts.entries.length, greaterThanOrEqualTo(80));
