@@ -1,0 +1,182 @@
+{
+  "R271": {
+    "case": "V2-01",
+    "group": "C",
+    "repeat": 1
+  },
+  "R186": {
+    "case": "V2-01",
+    "group": "A",
+    "repeat": 1
+  },
+  "R276": {
+    "case": "V2-01",
+    "group": "B",
+    "repeat": 1
+  },
+  "R202": {
+    "case": "V2-02",
+    "group": "A",
+    "repeat": 1
+  },
+  "R259": {
+    "case": "V2-02",
+    "group": "B",
+    "repeat": 1
+  },
+  "R187": {
+    "case": "V2-02",
+    "group": "C",
+    "repeat": 1
+  },
+  "R351": {
+    "case": "V2-03",
+    "group": "C",
+    "repeat": 1
+  },
+  "R216": {
+    "case": "V2-03",
+    "group": "B",
+    "repeat": 1
+  },
+  "R080": {
+    "case": "V2-03",
+    "group": "A",
+    "repeat": 1
+  },
+  "R159": {
+    "case": "V2-04",
+    "group": "A",
+    "repeat": 1
+  },
+  "R176": {
+    "case": "V2-04",
+    "group": "C",
+    "repeat": 1
+  },
+  "R298": {
+    "case": "V2-04",
+    "group": "B",
+    "repeat": 1
+  },
+  "R195": {
+    "case": "V2-05",
+    "group": "B",
+    "repeat": 1
+  },
+  "R228": {
+    "case": "V2-05",
+    "group": "C",
+    "repeat": 1
+  },
+  "R101": {
+    "case": "V2-05",
+    "group": "A",
+    "repeat": 1
+  },
+  "R211": {
+    "case": "V2-06",
+    "group": "B",
+    "repeat": 1
+  },
+  "R256": {
+    "case": "V2-06",
+    "group": "A",
+    "repeat": 1
+  },
+  "R352": {
+    "case": "V2-06",
+    "group": "C",
+    "repeat": 1
+  },
+  "R232": {
+    "case": "V2-07",
+    "group": "B",
+    "repeat": 1
+  },
+  "R213": {
+    "case": "V2-07",
+    "group": "C",
+    "repeat": 1
+  },
+  "R281": {
+    "case": "V2-07",
+    "group": "A",
+    "repeat": 1
+  },
+  "R192": {
+    "case": "V2-08",
+    "group": "A",
+    "repeat": 1
+  },
+  "R218": {
+    "case": "V2-08",
+    "group": "C",
+    "repeat": 1
+  },
+  "R142": {
+    "case": "V2-08",
+    "group": "B",
+    "repeat": 1
+  },
+  "R335": {
+    "case": "V2-09",
+    "group": "A",
+    "repeat": 1
+  },
+  "R038": {
+    "case": "V2-09",
+    "group": "B",
+    "repeat": 1
+  },
+  "R155": {
+    "case": "V2-09",
+    "group": "C",
+    "repeat": 1
+  },
+  "R245": {
+    "case": "V2-10",
+    "group": "B",
+    "repeat": 1
+  },
+  "R359": {
+    "case": "V2-10",
+    "group": "A",
+    "repeat": 1
+  },
+  "R017": {
+    "case": "V2-10",
+    "group": "C",
+    "repeat": 1
+  },
+  "R261": {
+    "case": "V2-11",
+    "group": "C",
+    "repeat": 1
+  },
+  "R279": {
+    "case": "V2-11",
+    "group": "B",
+    "repeat": 1
+  },
+  "R204": {
+    "case": "V2-11",
+    "group": "A",
+    "repeat": 1
+  },
+  "R291": {
+    "case": "V2-12",
+    "group": "C",
+    "repeat": 1
+  },
+  "R057": {
+    "case": "V2-12",
+    "group": "A",
+    "repeat": 1
+  },
+  "R045": {
+    "case": "V2-12",
+    "group": "B",
+    "repeat": 1
+  }
+}
